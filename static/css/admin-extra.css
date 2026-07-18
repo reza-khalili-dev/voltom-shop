@@ -1,0 +1,7 @@
+/* Voltom Admin Extra Styles */
+.field-invoice_link a {
+    background: #5A7863 !important;
+    color: white !important;
+    padding: 5px 15px !important;
+    border-radius: 4px !important;
+}
