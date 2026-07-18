@@ -46,13 +46,13 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.sitemaps',
     # Local apps
-    # 'core',
-    # 'accounts',
-    # 'products',
-    # 'cart',
-    # 'orders',
-    # 'blog',
-    # 'contacts',
+    'core',
+    'accounts',
+    'products',
+    'cart',
+    'orders',
+    'blog',
+    'contacts',
 ]
 
 SITE_ID = 1
@@ -87,15 +87,15 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                # 'core.context_processors.site_settings',
-                # 'core.context_processors.all_categories',
-                # 'core.context_processors.cart_context',
-                # 'core.context_processors.sliders',
-                # 'core.context_processors.all_tags',
-                # 'core.context_processors.sidebar_context',
-                # 'core.context_processors.static_pages',
-                # 'core.context_processors.contact_info',
-                # 'core.context_processors.footer_columns',
+                'core.context_processors.site_settings',
+                'core.context_processors.all_categories',
+                'core.context_processors.cart_context',
+                'core.context_processors.sliders',
+                'core.context_processors.all_tags',
+                'core.context_processors.sidebar_context',
+                'core.context_processors.static_pages',
+                'core.context_processors.contact_info',
+                'core.context_processors.footer_columns',
             ],
         },
     },
@@ -116,7 +116,7 @@ DATABASES = {
 # ============================================================
 # AUTH
 # ============================================================
-# AUTH_USER_MODEL = 'accounts.CustomUser'
+AUTH_USER_MODEL = 'accounts.CustomUser'
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
