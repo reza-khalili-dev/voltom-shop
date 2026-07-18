@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <title>فاکتور خرید #{{ order.id }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        body {
+            font-family: 'DejaVu Sans', 'Tahoma', 'Arial', sans-serif;
+            direction: rtl;
+            color: #333;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #5A7863;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        .header h1 {
+            color: #3B4953;
+            font-size: 24px;
+            margin: 0;
+        }
+        .header small {
+            color: #888;
+            font-size: 13px;
+        }
+        .info-box {
+            background: #f5f7f4;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .info-box table {
+            width: 100%;
+        }
+        .info-box td {
+            padding: 4px 8px;
+        }
+        .info-box .label {
+            font-weight: bold;
+            color: #5A7863;
+            width: 120px;
+        }
+        table.items {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        table.items th {
+            background: #5A7863;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            font-size: 13px;
+        }
+        table.items td {
+            padding: 8px 10px;
+            text-align: center;
+            border-bottom: 1px solid #eaeaea;
+        }
+        table.items tr:nth-child(even) {
+            background: #fafafa;
+        }
+        .totals {
+            width: 50%;
+            margin-right: auto;
+            margin-top: 20px;
+            border-top: 2px solid #5A7863;
+            padding-top: 15px;
+        }
+        .totals .row {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+        }
+        .totals .row.total {
+            font-weight: bold;
+            font-size: 16px;
+            color: #5A7863;
+            border-top: 1px solid #ddd;
+            padding-top: 8px;
+            margin-top: 4px;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #999;
+            font-size: 11px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        .badge-pending { background: #fff3cd; color: #856404; }
+        .badge-paid { background: #d4edda; color: #155724; }
+        .badge-shipped { background: #cce5ff; color: #004085; }
+        .badge-delivered { background: #d4edda; color: #155724; }
+        .badge-cancelled { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>فاکتور خرید</h1>
+        <small>Voltom - فروشگاه اینترنتی لوازم برقی</small>
+    </div>
+
+    <div class="info-box">
+        <table>
+            <tr>
+                <td class="label">شماره سفارش:</td>
+                <td>#{{ order.id }}</td>
+                <td class="label">تاریخ ثبت:</td>
+                <td>{{ order.created_at|date:"Y/m/d - H:i" }}</td>
+            </tr>
+            <tr>
+                <td class="label">نام خریدار:</td>
+                <td>{{ order.full_name }}</td>
+                <td class="label">شماره تماس:</td>
+                <td>{{ order.phone }}</td>
+            </tr>
+            <tr>
+                <td class="label">آدرس:</td>
+                <td colspan="3">{{ order.address }}</td>
+            </tr>
+            <tr>
+                <td class="label">استان / شهر:</td>
+                <td>{{ order.province }} - {{ order.city }}</td>
+                <td class="label">کد پستی:</td>
+                <td>{{ order.postal_code }}</td>
+            </tr>
+            <tr>
+                <td class="label">روش ارسال:</td>
+                <td>{{ order.shipping_method.name|default:'نامشخص' }}</td>
+                <td class="label">وضعیت:</td>
+                <td>
+                    <span class="badge badge-{{ order.status }}">
+                        {{ order.get_status_display }}
+                    </span>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <h3 style="color:#3B4953;">اقلام سفارش</h3>
+
+    <table class="items">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>نام محصول</th>
+                <th>سایز</th>
+                <th>رنگ</th>
+                <th>تعداد</th>
+                <th>قیمت واحد</th>
+                <th>جمع</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.size_name|default:'-' }}</td>
+                <td>{{ item.color_name|default:'-' }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.price|floatformat:0 }} ریال</td>
+                <td>{{ item.total|floatformat:0 }} ریال</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="totals">
+        <div class="row">
+            <span>جمع کل اقلام</span>
+            <span>{{ order.total_price|floatformat:0 }} ریال</span>
+        </div>
+        <div class="row">
+            <span>هزینه ارسال</span>
+            <span>{{ order.shipping_cost|floatformat:0 }} ریال</span>
+        </div>
+        <div class="row total">
+            <span>مبلغ قابل پرداخت</span>
+            <span>{{ order.total_with_shipping|floatformat:0 }} ریال</span>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>این فاکتور به صورت خودکار توسط سیستم تولید شده است.</p>
+        <p>Voltom - تمامی حقوق محفوظ است © ۱۴۰۵</p>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}پیگیری سفارش - Voltom{% endblock %}
+
+{% block breadcrumb %}
+<div class="breadcrumb">
+  <div class="container">
+    <div class="breadcrumb-inner">
+      <ul class="list-inline list-unstyled">
+        <li><a href="{% url 'home' %}">صفحه اصلی</a></li>
+        <li class="active">پیگیری سفارش</li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="body-content">
+  <div class="container">
+    <div class="track-order-page">
+      <div class="row">
+        <div class="col-md-6">
+          <h2 class="heading-title">پیگیری سفارش</h2>
+          <span class="title-tag inner-top-ss">لطفاً شماره سفارش خود را وارد کنید.</span>
+          <form class="register-form outer-top-xs" method="get" action="{% url 'track_order' %}">
+            <div class="form-group">
+              <label class="info-title" for="orderId">شماره سفارش <span>*</span></label>
+              <input type="text" class="form-control unicase-form-control text-input" id="orderId" name="order_id" placeholder="شماره سفارش را وارد کنید (مثال: 4)">
+            </div>
+            <button type="submit" class="btn-upper btn btn-primary checkout-page-button">پیگیری</button>
+          </form>
+
+          {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} m-t-20">
+              {{ message }}
+            </div>
+            {% endfor %}
+          {% endif %}
+
+          {% if order %}
+          <div class="m-t-30">
+            <div class="panel panel-default">
+              <div class="panel-heading"><h4>نتیجه پیگیری</h4></div>
+              <div class="panel-body">
+                <p><strong>شماره سفارش:</strong> #{{ order.id }}</p>
+                <p><strong>نام:</strong> {{ order.full_name }}</p>
+                <p><strong>تاریخ:</strong> {{ order.created_at|date:"Y/m/d" }}</p>
+                <p><strong>مبلغ:</strong> {{ order.total_price }} ریال</p>
+                <p><strong>هزینه ارسال:</strong> {{ order.shipping_cost }} ریال</p>
+                <p><strong>مبلغ قابل پرداخت:</strong> {{ order.total_with_shipping }} ریال</p>
+                <p><strong>روش ارسال:</strong> {{ order.shipping_method.name|default:'نامشخص' }}</p>
+                <p><strong>وضعیت:</strong> {{ order.get_status_display }}</p>
+                {% if order.tracking_code %}
+                <p><strong>کد پیگیری:</strong> {{ order.tracking_code }}</p>
+                {% endif %}
+                
+                <!-- دکمه دانلود فاکتور -->
+                <div class="m-t-20">
+                  <a href="{% url 'download_invoice' order.id %}" class="btn btn-primary">
+                    <i class="fa fa-file-pdf-o"></i> دانلود فاکتور PDF
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+
+        <div class="col-md-6">
+          {% if orders %}
+          <h2 class="heading-title">سفارش‌های من</h2>
+          <div class="table-responsive m-t-20">
+              <table class="table table-bordered">
+                  <thead>
+                      <tr>
+                          <th>#</th>
+                          <th>تاریخ</th>
+                          <th>مبلغ</th>
+                          <th>وضعیت</th>
+                          <th>فاکتور</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      {% for o in orders %}
+                      <tr>
+                          <td><a href="?order_id={{ o.id }}">{{ o.id }}</a></td>
+                          <td>{{ o.jalali_date }}</td>
+                          <td>{{ o.total_price }} ریال</td>
+                          <td>{{ o.get_status_display }}</td>
+                          <td>
+                              <a href="{% url 'download_invoice' o.id %}" class="btn btn-sm btn-primary">
+                                  <i class="fa fa-file-pdf-o"></i>
+                              </a>
+                          </td>
+                      </tr>
+                      {% endfor %}
+                  </tbody>
+              </table>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

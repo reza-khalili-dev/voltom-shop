@@ -1,0 +1,452 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.meta_title|default:product.name }} - Voltom{% endblock %}
+{% block meta_description %}{{ product.meta_description|default:product.description|striptags|truncatewords:30 }}{% endblock %}
+
+{% block breadcrumb %}
+<div class="breadcrumb">
+  <div class="container">
+    <div class="breadcrumb-inner">
+      <ul class="list-inline list-unstyled">
+        <li><a href="{% url 'home' %}">صفحه اصلی</a></li>
+        {% if product.category %}
+        <li><a href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a></li>
+        {% endif %}
+        <li class="active">{{ product.name }}</li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="body-content outer-top-xs">
+  <div class="container">
+    <div class="row single-product">
+      <!-- SIDEBAR -->
+      <div class="col-xs-12 col-sm-12 col-md-3 sidebar">
+        <div class="sidebar-module-container">
+          <!-- Banner -->
+          {% for banner in sidebar_banners %}
+            {% if banner.position == 'detail' %}
+            <div class="home-banner outer-top-n outer-bottom-xs">
+              {% if banner.link %}<a href="{{ banner.link }}">{% endif %}
+              <img src="{{ banner.image.url }}" alt="{{ banner.title }}" loading="lazy">
+              {% if banner.link %}</a>{% endif %}
+            </div>
+            {% endif %}
+          {% endfor %}
+
+          <!-- Hot Deals -->
+          {% if hot_deals %}
+          <div class="sidebar-widget hot-deals outer-bottom-xs">
+            <h3 class="section-title">فروش ویژه</h3>
+            <div class="owl-carousel sidebar-carousel custom-carousel owl-theme outer-top-ss">
+              {% for deal in hot_deals %}
+              <div class="item">
+                <div class="products">
+                  <div class="hot-deal-wrapper">
+                    <div class="image">
+                      <a href="{{ deal.get_absolute_url }}">
+                        <img src="{{ deal.image.url }}" alt="{{ deal.name }}" loading="lazy">
+                      </a>
+                    </div>
+                    {% if deal.hot_deal_discount %}
+                    <div class="sale-offer-tag"><span>{{ deal.hot_deal_discount }}%<br>تخفیف</span></div>
+                    {% endif %}
+                    {% if deal.hot_deal_end %}
+                    <div class="timing-wrapper" data-end="{{ deal.hot_deal_end|date:'c' }}">
+                      <div class="box-wrapper"><div class="date box"><span class="key days">0</span><span class="value">روز</span></div></div>
+                      <div class="box-wrapper"><div class="hour box"><span class="key hours">0</span><span class="value">ساعت</span></div></div>
+                      <div class="box-wrapper"><div class="minutes box"><span class="key mins">0</span><span class="value">دقیقه</span></div></div>
+                      <div class="box-wrapper"><div class="seconds box"><span class="key secs">0</span><span class="value">ثانیه</span></div></div>
+                    </div>
+                    {% endif %}
+                  </div>
+                  <div class="product-info text-left m-t-20">
+                    <h3 class="name"><a href="{{ deal.get_absolute_url }}">{{ deal.name }}</a></h3>
+                    <div class="product-price">
+                      <span class="price">{{ deal.final_price }} ریال</span>
+                      {% if deal.discount_price %}
+                      <span class="price-before-discount">{{ deal.price }} ریال</span>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="cart clearfix animate-effect">
+                    <div class="action">
+                      <div class="add-cart-button btn-group">
+                        <a href="{% url 'add_to_cart' deal.id %}" class="btn btn-primary cart-btn">به سبد خرید اضافه کنید</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- Newsletter -->
+          <div class="sidebar-widget newsletter outer-bottom-small outer-top-vs">
+            <h3 class="section-title">خبرنامه</h3>
+            <div class="sidebar-widget-body outer-top-xs">
+              <p>برای دریافت خبرنامه ما ثبت نام کنید!</p>
+              <form method="post" action="{% url 'newsletter_subscribe' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                  <label class="sr-only" for="newsletterEmail">آدرس ایمیل</label>
+                  <input type="email" class="form-control" name="email" id="newsletterEmail" placeholder="ایمیل خود را وارد کنید">
+                </div>
+                <button class="btn btn-primary" type="submit">اشتراک</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAIN CONTENT -->
+      <div class="col-xs-12 col-sm-12 col-md-9 rht-col">
+        <div class="detail-block">
+          <div class="row">
+            <!-- GALLERY -->
+            <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 gallery-holder">
+              <div class="product-item-holder size-big single-product-gallery small-gallery">
+                <div class="single-product-main-image" style="margin-bottom:15px;">
+                  <img id="main-product-image" class="img-responsive" src="{{ product.image.url }}" alt="{{ product.name }}" style="width:100%; border-radius:8px;">
+                </div>
+
+                <div class="single-product-gallery-thumbs gallery-thumbs">
+                  <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+                    <div class="item">
+                      <a class="horizontal-thumb active" data-image="{{ product.image.url }}" style="display:block;">
+                        <img src="{{ product.image.url }}" alt="" style="width:70px; height:70px; object-fit:cover; border:3px solid #5A7863; border-radius:6px; cursor:pointer;">
+                      </a>
+                    </div>
+                    {% for img in product.gallery.all %}
+                    <div class="item">
+                      <a class="horizontal-thumb" data-image="{{ img.image.url }}" style="display:block;">
+                        <img src="{{ img.image.url }}" alt="" style="width:70px; height:70px; object-fit:cover; border:2px solid #ddd; border-radius:6px; cursor:pointer;">
+                      </a>
+                    </div>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PRODUCT INFO -->
+            <div class="col-sm-12 col-md-8 col-lg-8 product-info-block">
+              <div class="product-info">
+                <h1 class="name">{{ product.name }}</h1>
+
+                <div class="stock-container info-container m-t-10">
+                  <div class="row">
+                    <div class="col-lg-12">
+                      <div class="pull-left"><div class="stock-box"><span class="label">دسترسی :</span></div></div>
+                      <div class="pull-left">
+                        <div class="stock-box">
+                          {% if product.total_stock > 0 %}
+                          <span class="value">موجود در انبار</span>
+                          {% else %}
+                          <span class="value text-danger">اتمام موجودی</span>
+                          {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="description-container m-t-20">
+                  <p>{{ product.description|safe }}</p>
+                </div>
+
+                <!-- ========== SPECIFICATIONS ========== -->
+                {% if product.specifications.exists %}
+                <div class="product-specs m-t-20 m-b-20">
+                  <h4>مشخصات فنی</h4>
+                  <table class="table table-bordered">
+                    <tbody>
+                      {% for spec in product.specifications.all %}
+                      <tr>
+                        <td style="width:40%;background:#f9f9f9;font-weight:bold;">{{ spec.key }}</td>
+                        <td style="width:60%;">{{ spec.value }}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+                {% endif %}
+
+                <!-- ========== PRODUCT META ========== -->
+                <div class="product-meta m-t-10 m-b-20">
+                  {% if product.brand %}
+                  <p><strong>برند:</strong> <a href="{{ product.brand.get_absolute_url }}">{{ product.brand.name }}</a></p>
+                  {% endif %}
+                  {% if product.warranty_period %}
+                  <p><strong>گارانتی:</strong> {{ product.warranty_period }}</p>
+                  {% endif %}
+                  {% if product.weight %}
+                  <p><strong>وزن:</strong> {{ product.weight }} گرم</p>
+                  {% endif %}
+                  {% if product.dimensions %}
+                  <p><strong>ابعاد:</strong> {{ product.dimensions }}</p>
+                  {% endif %}
+                  {% if product.energy_label %}
+                  <p><strong>برچسب مصرف انرژی:</strong> {{ product.energy_label }}</p>
+                  {% endif %}
+                  {% if product.is_original %}
+                  <p><span class="label label-success">کالای اصل</span></p>
+                  {% endif %}
+                </div>
+
+                <div class="price-container info-container m-t-30">
+                  <div class="row">
+                    <div class="col-sm-6 col-xs-6">
+                      <div class="price-box">
+                        {% if product.discount_price %}
+                        <span class="price">{{ product.discount_price }} ریال</span>
+                        <span class="price-strike">{{ product.price }} ریال</span>
+                        {% else %}
+                        <span class="price">{{ product.price }} ریال</span>
+                        {% endif %}
+                      </div>
+                    </div>
+                    <div class="col-sm-6 col-xs-6">
+                      <div class="favorite-button m-t-5">
+                        <a class="btn btn-primary" data-toggle="tooltip" title="افزودن به علاقه‌مندی" href="{% url 'add_to_wishlist' product.id %}"><i class="fa fa-heart"></i></a>
+                        <a class="btn btn-primary" data-toggle="tooltip" title="مقایسه" href="{% url 'add_to_compare' product.id %}"><i class="fa fa-signal"></i></a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Messages -->
+                {% if messages %}
+                <div class="messages-container" style="margin:20px 0;">
+                  {% for message in messages %}
+                  <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible" style="padding:12px 15px; border-radius:6px; margin-bottom:8px; {% if message.tags == 'error' %}background:#ffeaea; color:#d63031; border:1px solid #ffcccc;{% else %}background:#e8f5e9; color:#2e7d32; border:1px solid #c8e6c9;{% endif %}">
+                    <button type="button" class="close" data-dismiss="alert" style="float:left; background:none; border:none; font-size:18px; cursor:pointer; margin-right:10px;">&times;</button>
+                    {{ message }}
+                  </div>
+                  {% endfor %}
+                </div>
+                {% endif %}
+
+                {% if product.total_stock > 0 %}
+                <form method="post" action="{% url 'add_to_cart' product.id %}" id="add-to-cart-form">
+                  {% csrf_token %}
+                  <div class="quantity-container info-container">
+                    <div class="row">
+                      <div class="qty"><span class="label">تعداد:</span></div>
+                      <div class="qty-count">
+                        <div class="cart-quantity">
+                          <div class="quant-input">
+                            <div class="arrows">
+                              <div class="arrow plus gradient"><span class="ir"><i class="icon fa fa-sort-asc"></i></span></div>
+                              <div class="arrow minus gradient"><span class="ir"><i class="icon fa fa-sort-desc"></i></span></div>
+                            </div>
+                            <input type="text" name="quantity" id="qty" value="1" readonly>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="add-btn">
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-shopping-cart inner-right-vs"></i> افزودن به سبد خرید</button>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PRODUCT TABS -->
+        <div class="product-tabs inner-bottom-xs">
+          <div class="row">
+            <div class="col-sm-12 col-md-3 col-lg-3">
+              <ul id="product-tabs" class="nav nav-tabs nav-tab-cell">
+                <li class="active"><a data-toggle="tab" href="#description">توضیحات</a></li>
+                {% if product.technical_description %}
+                <li><a data-toggle="tab" href="#technical">توضیحات فنی</a></li>
+                {% endif %}
+                <li><a data-toggle="tab" href="#tags">برچسب‌ها</a></li>
+              </ul>
+            </div>
+            <div class="col-sm-12 col-md-9 col-lg-9">
+              <div class="tab-content">
+                <div id="description" class="tab-pane in active">
+                  <div class="product-tab">
+                    <p class="text">{{ product.description|safe }}</p>
+                  </div>
+                </div>
+                {% if product.technical_description %}
+                <div id="technical" class="tab-pane">
+                  <div class="product-tab">
+                    <p class="text">{{ product.technical_description|safe }}</p>
+                  </div>
+                </div>
+                {% endif %}
+                <div id="tags" class="tab-pane">
+                  <div class="product-tag">
+                    <h4 class="title">برچسب‌های محصول</h4>
+                    <div class="tag-list">
+                      {% for tag in product.tags.all %}
+                      <a class="item" href="{% url 'product_list' %}?tag={{ tag.slug }}">{{ tag.name }}</a>
+                      {% empty %}
+                      <span>برچسبی ثبت نشده</span>
+                      {% endfor %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- UPSELL PRODUCTS -->
+        {% if upsell_products %}
+        <section class="section featured-product">
+          <div class="row">
+            <div class="col-lg-3">
+              <h3 class="section-title">محصولات مرتبط</h3>
+            </div>
+            <div class="col-lg-9">
+              <div class="owl-carousel homepage-owl-carousel upsell-product custom-carousel owl-theme outer-top-xs">
+                {% for up in upsell_products %}
+                <div class="item item-carousel">
+                  <div class="products">
+                    <div class="product">
+                      <div class="product-image">
+                        <div class="image">
+                          <a href="{{ up.get_absolute_url }}">
+                            <img src="{{ up.image.url }}" alt="{{ up.name }}" loading="lazy">
+                          </a>
+                        </div>
+                        {% if up.discount_price %}<div class="tag sale"><span>فروش</span></div>{% endif %}
+                        {% if up.is_hot_deal %}<div class="tag hot"><span>داغ</span></div>{% endif %}
+                      </div>
+                      <div class="product-info text-left">
+                        <h3 class="name"><a href="{{ up.get_absolute_url }}">{{ up.name }}</a></h3>
+                        <div class="product-price">
+                          <span class="price">{{ up.final_price }} ریال</span>
+                          {% if up.discount_price %}<span class="price-before-discount">{{ up.price }} ریال</span>{% endif %}
+                        </div>
+                      </div>
+                      <div class="cart clearfix animate-effect">
+                        <div class="action">
+                          <ul class="list-unstyled">
+                            <li class="add-cart-button btn-group">
+                              <a href="{% url 'add_to_cart' up.id %}" class="btn btn-primary cart-btn">افزودن به سبد خرید</a>
+                            </li>
+                            <li class="lnk wishlist"><a href="{% url 'add_to_wishlist' up.id %}"><i class="icon fa fa-heart"></i></a></li>
+                            <li class="lnk"><a href="{% url 'add_to_compare' up.id %}"><i class="fa fa-signal"></i></a></li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </section>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "Product",
+  "name": "{{ product.name }}",
+  "image": "{{ request.build_absolute_uri }}{{ product.image.url }}",
+  "description": "{{ product.description|striptags|truncatewords:50 }}",
+  "sku": "{{ product.slug }}",
+  "brand": {
+    "@type": "Brand",
+    "name": "{{ product.brand.name|default:'Voltom' }}"
+  },
+  "offers": {
+    "@type": "Offer",
+    "url": "{{ request.build_absolute_uri }}",
+    "priceCurrency": "IRR",
+    "price": "{{ product.final_price }}",
+    "availability": "{% if product.total_stock > 0 %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}"
+  }
+}
+</script>
+
+<script>
+// ============================================
+// GALLERY - Click to change main image
+// ============================================
+document.addEventListener('DOMContentLoaded', function() {
+    var mainImage = document.getElementById('main-product-image');
+    var thumbnails = document.querySelectorAll('.horizontal-thumb');
+
+    thumbnails.forEach(function(thumb) {
+        thumb.addEventListener('click', function(e) {
+            e.preventDefault();
+            var newImageSrc = this.getAttribute('data-image');
+            if (newImageSrc) {
+                mainImage.src = newImageSrc;
+                mainImage.alt = 'تصویر محصول';
+            }
+            thumbnails.forEach(function(t) {
+                t.classList.remove('active');
+                t.querySelector('img').style.border = '2px solid #ddd';
+            });
+            this.classList.add('active');
+            this.querySelector('img').style.border = '3px solid #5A7863';
+        });
+    });
+});
+
+// ============================================
+// QUANTITY
+// ============================================
+var maxStock = {{ product.total_stock }};
+document.querySelector('.arrow.plus')?.addEventListener('click', function() {
+    var i = document.getElementById('qty'); 
+    var v = parseInt(i.value) + 1; 
+    if (v <= maxStock) i.value = v;
+});
+document.querySelector('.arrow.minus')?.addEventListener('click', function() {
+    var i = document.getElementById('qty'); 
+    var v = parseInt(i.value) - 1; 
+    if (v >= 1) i.value = v;
+});
+
+// ============================================
+// COUNTDOWN TIMER
+// ============================================
+document.querySelectorAll('.timing-wrapper').forEach(function(timer) {
+    var end = new Date(timer.dataset.end).getTime();
+    if (!end) return;
+    var daysEl = timer.querySelector('.days'), hoursEl = timer.querySelector('.hours'),
+        minsEl = timer.querySelector('.mins'), secsEl = timer.querySelector('.secs');
+    setInterval(function() {
+        var now = new Date().getTime(), diff = end - now;
+        if (diff <= 0) { 
+            daysEl.textContent = '0'; 
+            hoursEl.textContent = '0'; 
+            minsEl.textContent = '0'; 
+            secsEl.textContent = '0'; 
+            return; 
+        }
+        daysEl.textContent = Math.floor(diff / (1000*60*60*24));
+        hoursEl.textContent = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+        minsEl.textContent = Math.floor((diff % (1000*60*60)) / (1000*60));
+        secsEl.textContent = Math.floor((diff % (1000*60)) / 1000);
+    }, 1000);
+});
+</script>
+{% endblock %}

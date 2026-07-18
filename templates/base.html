@@ -1,0 +1,406 @@
+{% load static %}<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="description" content="{% block meta_description %}فروشگاه اینترنتی Voltom - خرید آنلاین انواع لوازم برقی و الکترونیکی با بهترین قیمت و گارانتی معتبر{% endblock %}">
+<meta name="author" content="NikanShop">
+<meta name="keywords" content="{% block meta_keywords %}لوازم برقی, فروشگاه آنلاین, Voltom, خرید لوازم خانگی, لوازم الکترونیکی{% endblock %}">
+<meta name="robots" content="all">
+<link rel="canonical" href="{% block canonical %}{{ request.build_absolute_uri }}{% endblock %}">
+<title>{% block title %}Voltom - فروشگاه لوازم برقی{% endblock %}</title>
+<!-- Bootstrap Core CSS -->
+<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+
+<!-- Customizable CSS -->
+<link rel="stylesheet" href="{% static 'css/main.css' %}">
+<link rel="stylesheet" href="{% static 'css/blue.css' %}">
+<link rel="stylesheet" href="{% static 'css/owl.carousel.css' %}">
+<link rel="stylesheet" href="{% static 'css/owl.transitions.css' %}">
+<link rel="stylesheet" href="{% static 'css/animate.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/rateit.css' %}">
+<link rel="stylesheet" href="{% static 'css/bootstrap-select.min.css' %}">
+
+<!-- Icons/Glyphs -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+{% block extra_css %}{% endblock %}
+<meta name="csrf-token" content="{{ csrf_token }}">
+{% if site_settings.favicon %}
+<link rel="icon" type="image/png" href="{{ site_settings.favicon.url }}">
+{% endif %}
+</head>
+<body class="cnt-home">
+
+<!-- ============================================== HEADER ============================================== -->
+<header class="header-style-1"> 
+  
+  <!-- ============================================== TOP MENU ============================================== -->
+  <div class="top-bar animate-dropdown">
+    <div class="container">
+      <div class="header-top-inner">
+        <div class="cnt-account">
+          <ul class="list-unstyled">
+            {% if user.is_authenticated %}
+              <li class="myaccount"><a href="{% url 'profile' %}"><span>حساب من</span></a></li>
+              <li class="wishlist"><a href="{% url 'my_wishlist' %}"><span>لیست علاقه مندیها</span></a></li>
+              <li class="header_cart hidden-xs"><a href="{% url 'cart_detail' %}"><span>سبد خرید من</span></a></li>
+              <li class="check"><a href="{% url 'checkout' %}"><span>وارسی</span></a></li>
+              <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                  {% csrf_token %}
+                  <button type="submit" style="background: none; border: none; color: #EBF4DD; cursor: pointer; padding: 0; font: inherit;">
+                      <span>خروج</span>
+                  </button>
+              </form>
+            {% else %}
+              <li class="myaccount"><a href="{% url 'login' %}"><span>حساب من</span></a></li>
+              <li class="wishlist"><a href="{% url 'my_wishlist' %}"><span>لیست علاقه مندیها</span></a></li>
+              <li class="header_cart hidden-xs"><a href="{% url 'login' %}"><span>سبد خرید من</span></a></li>
+              <li class="check"><a href="{% url 'login' %}"><span>وارسی</span></a></li>
+              <li class="login"><a href="{% url 'login' %}"><span>وارد شدن</span></a></li>
+            {% endif %}
+          </ul>
+        </div>
+        <!-- /.cnt-account -->
+        <div class="clearfix"></div>
+      </div>
+      <!-- /.header-top-inner --> 
+    </div>
+    <!-- /.container --> 
+  </div>
+  <!-- /.header-top --> 
+  <!-- ============================================== TOP MENU : END ============================================== -->
+  
+  <div class="main-header">
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-3 logo-holder"> 
+          <!-- ============================================================= LOGO ============================================================= -->
+          <div class="logo"> <a href="{% url 'home' %}">
+            {% if site_settings.logo %}
+              <img src="{{ site_settings.logo.url }}" alt="لوگو" loading="lazy">
+            {% else %}
+              <img src="{% static 'images/logo.png' %}" alt="لوگو" loading="lazy">
+            {% endif %}
+          </a> </div>
+          <!-- /.logo --> 
+        </div>
+        <!-- /.logo-holder -->
+        
+        <div class="col-lg-7 col-md-6 col-sm-8 col-xs-12 top-search-holder"> 
+          <div class="search-area">
+              <form action="{% url 'product_list' %}" method="get">
+                  <div class="control-group">
+                      <input class="search-field" name="q" placeholder="جستجو در محصولات..." style="width: 100%;">
+                      <button type="submit" class="search-button" style="position: absolute; left: 0; top: 0; border: none; background: #90AB8B; color: #fff; padding: 10px 15px; cursor: pointer;">
+                          <i class="fa fa-search"></i>
+                      </button>
+                  </div>
+              </form>
+          </div>
+        </div>
+        <!-- /.top-search-holder -->
+        
+        <div class="col-lg-2 col-md-3 col-sm-4 col-xs-12 animate-dropdown top-cart-row"> 
+          <div class="dropdown dropdown-cart"> <a href="#" class="dropdown-toggle lnk-cart" data-toggle="dropdown">
+            <div class="items-cart-inner">
+              <div class="basket">
+              <div class="basket-item-count"><span class="count">{% if cart %}{{ cart.total_items }}{% else %}0{% endif %}</span></div>
+              <div class="total-price-basket"> <span class="lbl">سبد خرید </span> <span class="value">{% if cart %}{{ cart.total_price }} ریال{% else %}0 ریال{% endif %}</span> </div>
+              </div>
+            </div>
+            </a>
+            <ul class="dropdown-menu">
+              <li>
+                {% if cart and cart.items.exists %}
+                  {% for item in cart.items.all %}
+                  <div class="cart-item product-summary">
+                    <div class="row">
+                      <div class="col-xs-4">
+                        <div class="image">
+                          <a href="{{ item.product.get_absolute_url }}">
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" loading="lazy">
+                          </a>
+                        </div>
+                      </div>
+                      <div class="col-xs-7">
+                        <h3 class="name"><a href="{{ item.product.get_absolute_url }}">{{ item.product.name }}</a></h3>
+                        <div class="price">{{ item.product.final_price }} ریال</div>
+                      </div>
+                      <div class="col-xs-1 action">
+                        <a href="{% url 'remove_from_cart' item.id %}"><i class="fa fa-trash"></i></a>
+                      </div>
+                    </div>
+                  </div>
+                  {% endfor %}
+                  <div class="clearfix"></div>
+                  <hr>
+                  <div class="clearfix cart-total">
+                    <div class="pull-right">
+                      <span class="text">مجموع: </span><span class="price">{{ cart.total_price }} ریال</span>
+                    </div>
+                    <div class="clearfix"></div>
+                    <a href="{% url 'checkout' %}" class="btn btn-upper btn-primary btn-block m-t-20">وارسی</a>
+                  </div>
+                {% else %}
+                  <p class="text-center" style="padding: 20px;">سبد خرید شما خالی است</p>
+                {% endif %}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /.main-header --> 
+  
+  <!-- ============================================== NAVBAR ============================================== -->
+  <div class="header-nav animate-dropdown">
+    <div class="container">
+      <div class="yamm navbar navbar-default" role="navigation">
+        <div class="navbar-header">
+          <button data-target="#mc-horizontal-menu-collapse" data-toggle="collapse" class="navbar-toggle collapsed" type="button">
+            <span class="sr-only">ناوبری را تغییر دهید</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div>
+        <div class="nav-bg-class">
+          <div class="navbar-collapse collapse" id="mc-horizontal-menu-collapse">
+            <div class="nav-outer">
+              <ul class="nav navbar-nav">
+                <li><a href="{% url 'home' %}">صفحه نخست</a></li>
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">دسته بندی ها<b class="caret"></b></a>
+                  <ul class="dropdown-menu">
+                    {% for category in all_categories %}
+                      {% if not category.parent %}
+                      <li><a href="{{ category.get_absolute_url }}">{{ category.name }}</a></li>
+                      {% endif %}
+                    {% endfor %}
+                  </ul>
+                </li>
+                <li><a href="{% url 'blog' %}">وبلاگ</a></li>
+                <li><a href="{% url 'about_us' %}">درباره ما</a></li>
+                <li><a href="{% url 'contact_us' %}">تماس با ما</a></li>
+              </ul>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+</header>
+<!-- ============================================== HEADER : END ============================================== -->
+
+{% block breadcrumb %}{% endblock %}
+
+{% block content %}{% endblock %}
+
+<!-- ============================================================= FOOTER ============================================================= -->
+
+    <div class="row our-features-box">
+        <div class="container">
+            <ul>
+                {% if site_settings %}
+                <li>
+                    <div class="feature-box">
+                        <div class="{{ site_settings.feature_1_icon|default:'icon-truck' }}"></div>
+                        <div class="content-blocks">{{ site_settings.feature_1_text|default:'ارسال سریع به سراسر ایران' }}</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="feature-box">
+                        <div class="{{ site_settings.feature_2_icon|default:'icon-support' }}"></div>
+                        <div class="content-blocks">{{ site_settings.feature_2_text|default:'پشتیبانی ۲۴ ساعته' }}</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="feature-box">
+                        <div class="{{ site_settings.feature_3_icon|default:'icon-money' }}"></div>
+                        <div class="content-blocks">{{ site_settings.feature_3_text|default:'تضمین بازگشت وجه' }}</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="feature-box">
+                        <div class="{{ site_settings.feature_4_icon|default:'icon-return' }}"></div>
+                        <div class="content-blocks">{{ site_settings.feature_4_text|default:'بازگشت ۷ روزه' }}</div>
+                    </div>
+                </li>
+                {% else %}
+                <li><div class="feature-box"><div class="icon-truck"></div><div class="content-blocks">ارسال سریع به سراسر ایران</div></div></li>
+                <li><div class="feature-box"><div class="icon-support"></div><div class="content-blocks">پشتیبانی ۲۴ ساعته</div></div></li>
+                <li><div class="feature-box"><div class="icon-money"></div><div class="content-blocks">تضمین بازگشت وجه</div></div></li>
+                <li><div class="feature-box"><div class="icon-return"></div><div class="content-blocks">بازگشت ۷ روزه</div></div></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+
+<!-- ============================================================= FOOTER ============================================================= -->
+<footer id="footer" class="footer color-bg">
+  <div class="footer-bottom">
+    <div class="container">
+      <div class="row">
+        <!-- Column 0: Contact Info -->
+        <div class="col-xs-12 col-sm-6 col-md-3">
+          <div class="address-block">
+            <div class="module-body">
+              <ul class="toggle-footer" style="">
+                <li class="media">
+                  <div class="pull-left"><span class="icon fa-stack fa-lg"><i class="fa fa-map-marker fa-stack-1x fa-inverse"></i></span></div>
+                  <div class="media-body"><p>{% if site_settings %}{{ site_settings.address }}{% else %}آدرس فروشگاه{% endif %}</p></div>
+                </li>
+                <li class="media">
+                  <div class="pull-left"><span class="icon fa-stack fa-lg"><i class="fa fa-mobile fa-stack-1x fa-inverse"></i></span></div>
+                  <div class="media-body"><p>{% if site_settings %}{{ site_settings.phone }}{% else %}شماره تماس{% endif %}</p></div>
+                </li>
+                <li class="media">
+                  <div class="pull-left"><span class="icon fa-stack fa-lg"><i class="fa fa-envelope fa-stack-1x fa-inverse"></i></span></div>
+                  <div class="media-body"><span><a href="mailto:{% if site_settings %}{{ site_settings.email }}{% endif %}">{% if site_settings %}{{ site_settings.email }}{% else %}ایمیل فروشگاه{% endif %}</a></span></div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dynamic Footer Columns -->
+        {% for column in footer_columns %}
+        <div class="col-xs-12 col-sm-6 col-md-3">
+          <div class="module-heading"><h4 class="module-title">{{ column.title }}</h4></div>
+          <div class="module-body">
+            <ul class="list-unstyled">
+              {% for link in column.links.all %}
+                {% if link.is_active %}
+                <li class="{% if forloop.first %}first{% endif %}{% if forloop.last %}last{% endif %}">
+                  <a href="{{ link.url }}">{{ link.title }}</a>
+                </li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  
+<div class="copyright-bar">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 text-center text-sm-right" style="margin-bottom: 10px;">
+                <!-- شبکه‌های اجتماعی -->
+                <ul class="link list-inline" style="margin:0;padding:0;">
+                    {% if site_settings.facebook %}<li class="list-inline-item"><a target="_blank" rel="nofollow" href="{{ site_settings.facebook }}" title="فیس بوک"><i class="fa fa-facebook"></i></a></li>{% endif %}
+                    {% if site_settings.twitter %}<li class="list-inline-item"><a target="_blank" rel="nofollow" href="{{ site_settings.twitter }}" title="توییتر"><i class="fa fa-twitter"></i></a></li>{% endif %}
+                    {% if site_settings.instagram %}<li class="list-inline-item"><a target="_blank" rel="nofollow" href="{{ site_settings.instagram }}" title="اینستاگرام"><i class="fa fa-instagram"></i></a></li>{% endif %}
+                    {% if site_settings.telegram %}<li class="list-inline-item"><a target="_blank" rel="nofollow" href="{{ site_settings.telegram }}" title="تلگرام"><i class="fa fa-telegram"></i></a></li>{% endif %}
+                </ul>
+            </div>
+            <div class="col-xs-12 col-sm-6 text-center text-sm-left">
+                <!-- لوگوها -->
+                <a referrerpolicy='origin' target='_blank' href='https://trustseal.enamad.ir/?id=751148&Code=FVnW0SORxvYjgNp1GlWBukzX3p75Njp5'>
+                    <img src="{% static 'images/enamad.png' %}" alt='اینماد' style='width:70px;height:auto;'>
+                </a>
+                <img src="{% static 'images/dybug_payment_zarinpal.svg' %}" alt='زرین‌پال' style='width:70px;height:auto;margin-right:10px;'>
+            </div>
+            <div class="col-xs-12 text-center" style="margin-top: 10px;">
+                {% if site_settings %}{{ site_settings.copyright_text }}{% else %}تمامی حقوق محفوظ است © ۱۴۰۵ فروشگاه voltom{% endif %}
+                | طراحی و توسعه توسط <a href="https://reza-khalili.ir" target="_blank" rel="nofollow" style="color: #90AB8B;">رضا خلیلی</a>
+            </div>
+        </div>
+    </div>
+</div>
+</footer>
+
+<!-- ==============================================
+     MOBILE BOTTOM NAVIGATION
+     ============================================== -->
+<nav class="mobile-bottom-nav" id="mobileBottomNav">
+    <ul class="nav-items">
+        <li>
+            <a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}" data-page="home">
+                <i class="fa fa-home"></i>
+                <span>صفحه اصلی</span>
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'my_wishlist' %}" class="{% if request.resolver_match.url_name == 'my_wishlist' %}active{% endif %}" data-page="wishlist">
+                <i class="fa-regular fa-heart"></i>
+                <span>علاقه‌مندی</span>
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'cart_detail' %}" class="{% if request.resolver_match.url_name == 'cart_detail' %}active{% endif %}" data-page="cart">
+                <i class="fa fa-shopping-bag"></i>
+                <span>سبد خرید</span>
+                {% if cart and cart.total_items > 0 %}
+                <span class="badge-cart">{{ cart.total_items }}</span>
+                {% endif %}
+            </a>
+        </li>
+        <li>
+            <a href="{% if user.is_authenticated %}{% url 'profile' %}{% else %}{% url 'login' %}{% endif %}" class="{% if request.resolver_match.url_name == 'profile' or request.resolver_match.url_name == 'login' %}active{% endif %}" data-page="account">
+                <i class="fa-regular fa-user"></i>
+                <span>حساب کاربری</span>
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'product_list' %}" class="{% if request.resolver_match.url_name == 'product_list' %}active{% endif %}" data-page="shop">
+                <i class="fa fa-store"></i>
+                <span>فروشگاه</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+
+<!-- JavaScripts placed at the end of the document so the pages load faster --> 
+<script src="{% static 'js/jquery-1.11.1.min.js' %}"></script> 
+<script src="{% static 'js/bootstrap.min.js' %}"></script> 
+<script src="{% static 'js/bootstrap-hover-dropdown.min.js' %}"></script> 
+<script src="{% static 'js/owl.carousel.min.js' %}"></script> 
+<script src="{% static 'js/echo.min.js' %}"></script> 
+<script src="{% static 'js/jquery.easing-1.3.min.js' %}"></script> 
+<script src="{% static 'js/bootstrap-slider.min.js' %}"></script> 
+<script src="{% static 'js/jquery.rateit.min.js' %}"></script> 
+<script src="{% static 'js/lightbox.min.js' %}"></script> 
+<script src="{% static 'js/bootstrap-select.min.js' %}"></script> 
+<script src="{% static 'js/wow.min.js' %}"></script> 
+<script src="{% static 'js/scripts.js' %}"></script>
+
+<script>
+    // ==============================================
+    // MOBILE BOTTOM NAV - RIPPLE EFFECT
+    // ==============================================
+    document.querySelectorAll('.mobile-bottom-nav .nav-items li a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            const ripple = document.createElement('span');
+            ripple.classList.add('ripple');
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+            ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
+            this.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 600);
+        });
+    });
+
+    // ==============================================
+    // ACTIVE PAGE HIGHLIGHT
+    // ==============================================
+    const currentPage = window.location.pathname;
+    document.querySelectorAll('.mobile-bottom-nav .nav-items li a').forEach(link => {
+        const href = link.getAttribute('href');
+        if (href && currentPage.includes(href)) {
+            link.classList.add('active');
+        }
+    });
+</script>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>

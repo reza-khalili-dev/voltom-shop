@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}سبد خرید - Voltom{% endblock %}
+
+{% block breadcrumb %}
+<div class="breadcrumb">
+  <div class="container">
+    <div class="breadcrumb-inner">
+      <ul class="list-inline list-unstyled">
+        <li><a href="{% url 'home' %}">صفحه اصلی</a></li>
+        <li class="active">سبد خرید</li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="body-content outer-top-xs">
+  <div class="container">
+    <div class="row">
+      <div class="shopping-cart">
+        {% if cart and cart.items.exists %}
+        <div class="shopping-cart-table">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th class="cart-romove item">حذف</th>
+                  <th class="cart-description item">تصویر</th>
+                  <th class="cart-product-name item">نام محصول</th>
+                  <th class="cart-qty item">تعداد</th>
+                  <th class="cart-sub-total item">قیمت واحد</th>
+                  <th class="cart-total last-item">جمع</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in cart.items.all %}
+                <tr>
+                  <td>
+                      <a href="{% url 'remove_from_cart' item.id %}"><i class="fa fa-trash"></i></a>
+                  </td>
+                  <td class="cart-image">
+                    <a class="entry-thumbnail" href="{{ item.product.get_absolute_url }}">
+                      <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" loading="lazy" style="width:100px;">
+                    </a>
+                  </td>
+                  <td class="cart-product-name-info">
+                    <h4 class="cart-product-description"><a href="{{ item.product.get_absolute_url }}">{{ item.product.name }}</a></h4>
+                  </td>
+                  <td class="cart-product-quantity">
+                    <div class="quant-input">
+                      <span>{{ item.quantity }}</span>
+                    </div>
+                  </td>
+                  <td class="cart-product-sub-total"><span class="cart-sub-total-price">{{ item.product.final_price }} ریال</span></td>
+                  <td class="cart-product-grand-total"><span class="cart-grand-total-price">{{ item.total }} ریال</span></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="6">
+                    <div class="shopping-cart-btn">
+                      <span class="">
+                        <a href="{% url 'product_list' %}" class="btn btn-upper btn-primary outer-left-xs">ادامه خرید</a>
+                        <a href="{% url 'checkout' %}" class="btn btn-upper btn-primary pull-right outer-right-xs">تسویه حساب</a>
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+
+        <div class="col-md-4 col-sm-12 cart-shopping-total pull-right">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>
+                  <div class="cart-sub-total">جمع کل<span class="inner-left-md">{{ cart.total_price }} ریال</span></div>
+                  <div class="cart-grand-total">مبلغ نهایی<span class="inner-left-md">{{ cart.total_price }} ریال</span></div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="cart-checkout-btn pull-right">
+                    <a href="{% url 'checkout' %}" class="btn btn-primary checkout-btn">اقدام به پرداخت</a>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="col-md-12 text-center m-t-40">
+          <h2>سبد خرید شما خالی است</h2>
+          <p>می‌توانید از <a href="{% url 'product_list' %}">فروشگاه</a> محصولات را به سبد خرید اضافه کنید.</p>
+          <a href="{% url 'product_list' %}" class="btn btn-primary m-t-20">مشاهده محصولات</a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

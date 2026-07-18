@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ terms_page.meta_title|default:'شرایط و قوانین' }} - Voltom{% endblock %}
+{% block meta_description %}{{ terms_page.meta_description|default:'شرایط و قوانین فروشگاه Voltom' }}{% endblock %}
+
+{% block breadcrumb %}
+<div class="breadcrumb">
+  <div class="container">
+    <div class="breadcrumb-inner">
+      <ul class="list-inline list-unstyled">
+        <li><a href="{% url 'home' %}">صفحه اصلی</a></li>
+        <li class="active">{{ terms_page.title|default:'شرایط و قوانین' }}</li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="body-content">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 terms-conditions">
+        {% if terms_page %}
+          <h2 class="heading-title">{{ terms_page.title }}</h2>
+          <div class="m-t-20">
+            {{ terms_page.content|safe }}
+          </div>
+        {% else %}
+          <h2 class="heading-title">شرایط و قوانین</h2>
+          <p>محتوای این صفحه به زودی اضافه خواهد شد.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

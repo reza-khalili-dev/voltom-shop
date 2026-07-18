@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ post.meta_title|default:post.title }} - Voltom{% endblock %}
+{% block meta_description %}{{ post.meta_description|default:post.summary|truncatewords:50 }}{% endblock %}
+{% block meta_keywords %}وبلاگ, مقاله, {{ post.title }}, {{ post.category.name|default:'' }}{% endblock %}
+
+{% block breadcrumb %}
+<div class="breadcrumb">
+  <div class="container">
+    <div class="breadcrumb-inner">
+      <ul class="list-inline list-unstyled">
+        <li><a href="{% url 'home' %}">صفحه اصلی</a></li>
+        <li><a href="{% url 'blog' %}">وبلاگ</a></li>
+        <li class="active">{{ post.title }}</li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="body-content">
+  <div class="container">
+    <div class="row">
+      <div class="blog-page">
+        <div class="col-xs-12 col-sm-9 col-md-9 rht-col">
+          <div class="blog-post wow fadeInUp">
+            {% if post.image %}
+            <img class="img-responsive" src="{{ post.image.url }}" alt="{{ post.title }}" loading="lazy">
+            {% endif %}
+            <h1>{{ post.title }}</h1>
+            <span class="author">{{ post.author.get_full_name }}</span>
+            <span class="review">{{ post.approved_comments_count }} نظر</span>
+            <span class="date-time">{{ post.published_at|default:post.created_at|date:"Y/m/d ساعت H:i" }}</span>
+            <div class="blog-content">{{ post.content|safe }}</div>
+
+            <div class="social-media">
+              <span>اشتراک گذاری پست:</span>
+              <a href="#"><i class="fa fa-facebook"></i></a>
+              <a href="#"><i class="fa fa-twitter"></i></a>
+              <a href="#"><i class="fa fa-linkedin"></i></a>
+            </div>
+          </div>
+
+          <div class="blog-post-author-details wow fadeInUp">
+            <div class="row">
+              <div class="col-md-2">
+                <img src="{% static 'images/testimonials/member3.png' %}" alt="{{ post.author.get_full_name }}" class="img-circle img-responsive" loading="lazy">
+              </div>
+              <div class="col-md-10">
+                <h4>{{ post.author.get_full_name }}</h4>
+                <span class="author-job">نویسنده</span>
+                <p>{{ post.summary }}</p>
+              </div>
+            </div>
+          </div>
+
+          {% if comments %}
+          <div class="blog-review wow fadeInUp">
+            <h3 class="title-review-comments">{{ comments.count }} نظر</h3>
+            {% for comment in comments %}
+            <div class="row">
+              <div class="col-md-2 col-sm-2">
+                <img src="{% static 'images/testimonials/member1.png' %}" alt="کاربر" class="img-rounded img-responsive" loading="lazy">
+              </div>
+              <div class="col-md-10 col-sm-10 blog-comments outer-bottom-xs">
+                <div class="blog-comments inner-bottom-xs">
+                  <h4>{{ comment.user.get_full_name|default:comment.user.username }}</h4>
+                  <span class="review-action pull-right">
+                    {{ comment.created_at|date:"Y/m/d" }}
+                  </span>
+                  <p>{{ comment.content }}</p>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          {% if user.is_authenticated %}
+          <div class="blog-write-comment outer-bottom-xs outer-top-xs">
+            <h4>نظر خود را بنویسید</h4>
+            <form method="post" action="{% url 'add_comment' post.id %}">
+              {% csrf_token %}
+              <div class="form-group">
+                <textarea name="content" class="form-control unicase-form-control" rows="4" placeholder="متن نظر شما..."></textarea>
+              </div>
+              <button type="submit" class="btn-upper btn btn-primary">ارسال نظر</button>
+            </form>
+          </div>
+          {% else %}
+          <p class="m-t-20"><a href="{% url 'login' %}">وارد شوید</a> تا بتوانید نظر بدهید.</p>
+          {% endif %}
+        </div>
+
+        <!-- SIDEBAR -->
+        <div class="col-xs-12 col-sm-3 col-md-3 sidebar">
+          <div class="sidebar-module-container">
+
+            <!-- Search -->
+            <div class="search-area outer-bottom-small">
+              <form method="get" action="{% url 'blog' %}">
+                <div class="control-group" style="position: relative;">
+                  <input placeholder="جستجو در مقالات..." class="search-field" name="q" style="padding-left: 30px;">
+                  <button type="submit" style="position: absolute; left: 5px; top: 50%; transform: translateY(-50%); border: none; background: none; cursor: pointer;">
+                    <i class="fa fa-search"></i>
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Banner -->
+            {% for banner in sidebar_banners %}
+              {% if banner.position == 'blog' %}
+              <div class="home-banner outer-top-n outer-bottom-xs">
+                {% if banner.link %}<a href="{{ banner.link }}">{% endif %}
+                <img src="{{ banner.image.url }}" alt="{{ banner.title }}" loading="lazy">
+                {% if banner.link %}</a>{% endif %}
+              </div>
+              {% endif %}
+            {% endfor %}
+
+            <!-- Categories -->
+            <div class="sidebar-widget outer-bottom-xs wow fadeInUp">
+              <h3 class="section-title">دسته‌بندی مقالات</h3>
+              <div class="sidebar-widget-body m-t-10">
+                <ul class="list-unstyled">
+                  <li><a href="{% url 'blog' %}">همه مقالات</a></li>
+                  {% for cat in blog_categories %}
+                  <li><a href="{% url 'blog' %}?category={{ cat.slug }}">{{ cat.name }}</a></li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+
+            <!-- Popular & Recent Posts -->
+            {% if popular_posts or recent_posts %}
+            <div class="sidebar-widget outer-bottom-xs wow fadeInUp">
+              <h3 class="section-title">ویجت برگه</h3>
+              <ul class="nav nav-tabs">
+                <li class="active"><a href="#popular" data-toggle="tab">پست محبوب</a></li>
+                <li><a href="#recent" data-toggle="tab">پست اخیر</a></li>
+              </ul>
+              <div class="tab-content" style="padding-left:0">
+                <div class="tab-pane active m-t-20" id="popular">
+                  {% for post in popular_posts %}
+                  <div class="blog-post inner-bottom-30">
+                    {% if post.image %}<img class="img-responsive" src="{{ post.image.url }}" alt="{{ post.title }}" loading="lazy">{% endif %}
+                    <h4><a href="{% url 'blog_detail' post.slug %}">{{ post.title }}</a></h4>
+                    <span class="review">{{ post.approved_comments_count }} نظر</span>
+                    <span class="date-time">{{ post.published_at|date:"Y/m/d" }}</span>
+                  </div>
+                  {% endfor %}
+                </div>
+                <div class="tab-pane m-t-20" id="recent">
+                  {% for post in recent_posts %}
+                  <div class="blog-post">
+                    {% if post.image %}<img class="img-responsive" src="{{ post.image.url }}" alt="{{ post.title }}" loading="lazy">{% endif %}
+                    <h4><a href="{% url 'blog_detail' post.slug %}">{{ post.title }}</a></h4>
+                    <span class="review">{{ post.approved_comments_count }} نظر</span>
+                    <span class="date-time">{{ post.published_at|date:"Y/m/d" }}</span>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+            {% endif %}
+
+            <!-- Product Tags -->
+            <div class="sidebar-widget product-tag wow fadeInUp">
+              <h3 class="section-title">برچسب‌های محصول</h3>
+              <div class="sidebar-widget-body outer-top-xs">
+                <div class="tag-list">
+                  {% for tag in all_tags %}
+                  <a class="item" href="{% url 'product_list' %}?tag={{ tag.slug }}">{{ tag.name }}</a>
+                  {% empty %}
+                  <span>برچسبی موجود نیست</span>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

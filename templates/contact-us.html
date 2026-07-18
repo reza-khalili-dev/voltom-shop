@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ contact_info.meta_title|default:'تماس با ما' }} - Voltom{% endblock %}
+{% block meta_description %}{{ contact_info.meta_description|default:'' }}{% endblock %}
+
+{% block breadcrumb %}
+<div class="breadcrumb">
+  <div class="container">
+    <div class="breadcrumb-inner">
+      <ul class="list-inline list-unstyled">
+        <li><a href="{% url 'home' %}">صفحه اصلی</a></li>
+        <li class="active">{{ contact_info.title|default:'تماس با ما' }}</li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="body-content outer-top-xs">
+  <div class="container">
+    <div class="contact-page">
+      <div class="row">
+        <div class="col-md-8 contact-form">
+          <div class="col-md-12 contact-title">
+            <h4>{{ contact_info.title|default:'فرم تماس با ما' }}</h4>
+            {% if contact_info.description %}
+            <p>{{ contact_info.description }}</p>
+            {% else %}
+            <p>برای ارتباط با ما لطفاً فرم زیر را تکمیل کنید. همکاران ما در اسرع وقت پاسخگوی شما خواهند بود.</p>
+            {% endif %}
+          </div>
+
+          {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-success">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+
+          <form method="post">
+            {% csrf_token %}
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="info-title" for="id_name">نام و نام خانوادگی <span>*</span></label>
+                <input type="text" name="name" class="form-control unicase-form-control text-input" id="id_name" required>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="info-title" for="id_email">آدرس ایمیل <span>*</span></label>
+                <input type="email" name="email" class="form-control unicase-form-control text-input" id="id_email" required>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="info-title" for="id_phone">شماره تماس</label>
+                <input type="text" name="phone" class="form-control unicase-form-control text-input" id="id_phone">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="info-title" for="id_subject">عنوان پیام <span>*</span></label>
+                <input type="text" name="subject" class="form-control unicase-form-control text-input" id="id_subject" required>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group">
+                <label class="info-title" for="id_message">متن پیام <span>*</span></label>
+                <textarea name="message" class="form-control unicase-form-control" id="id_message" rows="5" required></textarea>
+              </div>
+            </div>
+            <div class="col-md-12 outer-bottom-small m-t-20">
+              <button type="submit" class="btn-upper btn btn-primary checkout-page-button">ارسال پیام</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="col-md-4 contact-info">
+          <div class="contact-title">
+            <h4>اطلاعات تماس</h4>
+          </div>
+          {% if contact_info %}
+          <div class="clearfix address">
+            <span class="contact-i"><i class="fa fa-map-marker"></i></span>
+            <span class="contact-span">{{ contact_info.address }}</span>
+          </div>
+          {% if contact_info.phone %}
+          <div class="clearfix phone-no">
+            <span class="contact-i"><i class="fa fa-phone"></i></span>
+            <span class="contact-span">{{ contact_info.phone }}</span>
+          </div>
+          {% endif %}
+          {% if contact_info.mobile %}
+          <div class="clearfix phone-no">
+            <span class="contact-i"><i class="fa fa-mobile"></i></span>
+            <span class="contact-span">{{ contact_info.mobile }}</span>
+          </div>
+          {% endif %}
+          <div class="clearfix email">
+            <span class="contact-i"><i class="fa fa-envelope"></i></span>
+            <span class="contact-span"><a href="mailto:{{ contact_info.email }}">{{ contact_info.email }}</a></span>
+          </div>
+          <div class="clearfix working-hours m-t-20">
+            <h4>ساعات کاری</h4>
+            {% if contact_info.working_hours_sat_wed %}<p>{{ contact_info.working_hours_sat_wed }}</p>{% endif %}
+            {% if contact_info.working_hours_thu %}<p>{{ contact_info.working_hours_thu }}</p>{% endif %}
+            <p>{{ contact_info.working_hours_fri|default:'جمعه: تعطیل' }}</p>
+          </div>
+          {% elif site_settings %}
+          <div class="clearfix address">
+            <span class="contact-i"><i class="fa fa-map-marker"></i></span>
+            <span class="contact-span">{{ site_settings.address|default:'آدرس فروشگاه' }}</span>
+          </div>
+          <div class="clearfix phone-no">
+            <span class="contact-i"><i class="fa fa-mobile"></i></span>
+            <span class="contact-span">{{ site_settings.phone|default:'شماره تماس' }}</span>
+          </div>
+          <div class="clearfix email">
+            <span class="contact-i"><i class="fa fa-envelope"></i></span>
+            <span class="contact-span"><a href="mailto:{{ site_settings.email }}">{{ site_settings.email|default:'ایمیل' }}</a></span>
+          </div>
+          <div class="clearfix working-hours m-t-20">
+            <h4>ساعات کاری</h4>
+            <p>شنبه تا چهارشنبه: ۹ صبح تا ۱۸ عصر</p>
+            <p>پنجشنبه: ۹ صبح تا ۱۴ عصر</p>
+            <p>جمعه: تعطیل</p>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

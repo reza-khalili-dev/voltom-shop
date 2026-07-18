@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ about_page.meta_title|default:'درباره ما' }} - Voltom{% endblock %}
+{% block meta_description %}{{ about_page.meta_description|default:'فروشگاه اینترنتی Voltom - درباره ما' }}{% endblock %}
+
+{% block breadcrumb %}
+<div class="breadcrumb">
+  <div class="container">
+    <div class="breadcrumb-inner">
+      <ul class="list-inline list-unstyled">
+        <li><a href="{% url 'home' %}">صفحه اصلی</a></li>
+        <li class="active">{{ about_page.title|default:'درباره ما' }}</li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="body-content outer-top-xs">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        {% if about_page %}
+          <h2 class="heading-title">{{ about_page.title }}</h2>
+          {% if about_page.image %}
+          <div class="text-center m-b-20">
+            <img src="{{ about_page.image.url }}" alt="{{ about_page.title }}" class="img-responsive" loading="lazy">
+          </div>
+          {% endif %}
+          <div class="about-content m-t-20">
+            {{ about_page.content|safe }}
+          </div>
+        {% else %}
+          <h2 class="heading-title">درباره فروشگاه Voltom</h2>
+          <div class="about-content m-t-20">
+            <p>محتوای این صفحه به زودی اضافه خواهد شد.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

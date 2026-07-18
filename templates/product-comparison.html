@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}مقایسه محصولات - Voltom{% endblock %}
+
+{% block breadcrumb %}
+<div class="breadcrumb">
+  <div class="container">
+    <div class="breadcrumb-inner">
+      <ul class="list-inline list-unstyled">
+        <li><a href="{% url 'home' %}">صفحه اصلی</a></li>
+        <li class="active">مقایسه محصولات</li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="body-content outer-top-xs">
+  <div class="container">
+    <div class="product-comparison">
+      <h2 class="heading-title text-center">مقایسه محصولات</h2>
+      {% if compare_products %}
+      <div class="table-responsive m-t-20">
+        <table class="table compare-table inner-top-vs">
+          <tbody>
+            <tr>
+              <th>محصولات</th>
+              {% for product in compare_products %}
+              <td>
+                <div class="product">
+                  <div class="product-image">
+                    <div class="image">
+                      <a href="{{ product.get_absolute_url }}">
+                        <img alt="" src="{{ product.image.url }}" loading="lazy" style="max-height:200px;">
+                      </a>
+                    </div>
+                    <div class="product-info text-left">
+                      <h3 class="name"><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h3>
+                      <div class="action">
+                        <a class="lnk btn btn-primary" href="{% url 'add_to_cart' product.id %}">افزودن به سبد خرید</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+              {% endfor %}
+            </tr>
+            <tr>
+              <th>قیمت</th>
+              {% for product in compare_products %}
+              <td>
+                <div class="product-price">
+                  <span class="price">{{ product.final_price }} ریال</span>
+                  {% if product.discount_price %}
+                  <span class="price-before-discount">{{ product.price }} ریال</span>
+                  {% endif %}
+                </div>
+              </td>
+              {% endfor %}
+            </tr>
+            <tr>
+              <th>دسته‌بندی</th>
+              {% for product in compare_products %}
+              <td><p>{{ product.category.name }}</p></td>
+              {% endfor %}
+            </tr>
+            <tr>
+              <th>موجودی</th>
+              {% for product in compare_products %}
+              <td>
+                {% if product.total_stock > 0 %}
+                <p class="in-stock">در انبار</p>
+                {% else %}
+                <p class="out-of-stock">اتمام موجودی</p>
+                {% endif %}
+              </td>
+              {% endfor %}
+            </tr>
+            <tr>
+              <th>برداشتن</th>
+              {% for product in compare_products %}
+              <td class="text-center">
+                <a href="{% url 'remove_from_compare' product.id %}" class="remove-icon"><i class="fa fa-times"></i></a>
+              </td>
+              {% endfor %}
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="text-center m-t-40">
+        <p>محصولی برای مقایسه انتخاب نشده است.</p>
+        <a href="{% url 'product_list' %}" class="btn btn-primary m-t-20">مشاهده محصولات</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

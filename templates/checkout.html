@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}تسویه حساب - Voltom{% endblock %}
+
+{% block breadcrumb %}
+<div class="breadcrumb">
+  <div class="container">
+    <div class="breadcrumb-inner">
+      <ul class="list-inline list-unstyled">
+        <li><a href="{% url 'home' %}">صفحه اصلی</a></li>
+        <li class="active">تسویه حساب</li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="body-content">
+  <div class="container">
+    {% if cart and cart.items.exists %}
+    <div class="checkout-box">
+      <div class="row">
+        <div class="col-xs-12 col-sm-9 col-md-9 rht-col">
+          <div class="panel-group checkout-steps" id="accordion">
+
+            <div class="panel panel-default checkout-step-01">
+              <div class="panel-heading">
+                <h4 class="unicase-checkout-title">
+                  <a data-toggle="collapse" class="" data-parent="#accordion" href="#collapseOne">
+                    <span>1</span> اطلاعات صورتحساب
+                  </a>
+                </h4>
+              </div>
+              <div id="collapseOne" class="panel-collapse collapse in">
+                <div class="panel-body">
+                  <form method="post" id="checkout-form">
+                    {% csrf_token %}
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="info-title">نام و نام خانوادگی <span>*</span></label>
+                          <input type="text" name="full_name" class="form-control unicase-form-control" value="{{ user.get_full_name }}" required>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="info-title">شماره تماس <span>*</span></label>
+                          <input type="text" name="phone" class="form-control unicase-form-control" value="{{ user.phone }}" required>
+                        </div>
+                      </div>
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="info-title">آدرس کامل <span>*</span></label>
+                          <textarea name="address" class="form-control unicase-form-control" rows="3" required>{{ user.address }}</textarea>
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <label class="info-title">استان <span>*</span></label>
+                          <input type="text" name="province" class="form-control unicase-form-control" required>
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <label class="info-title">شهر <span>*</span></label>
+                          <input type="text" name="city" class="form-control unicase-form-control" required>
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <label class="info-title">کد پستی <span>*</span></label>
+                          <input type="text" name="postal_code" class="form-control unicase-form-control" required>
+                        </div>
+                      </div>
+
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="info-title">روش ارسال <span>*</span></label>
+                          <select name="shipping_method" class="form-control unicase-form-control" id="shipping_method" required>
+                            <option value="">انتخاب روش ارسال ...</option>
+                            {% for method in shipping_methods %}
+                            <option value="{{ method.id }}" data-price="{{ method.price }}">
+                                {{ method.name }} - {{ method.price|floatformat:0 }} ریال
+                            </option>
+                            {% endfor %}
+                          </select>
+                          <div id="shipping_price_display" style="margin-top:5px;color:#5A7863;font-weight:bold;"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel panel-default checkout-step-02">
+              <div class="panel-heading">
+                <h4 class="unicase-checkout-title">
+                  <a data-toggle="collapse" class="collapsed" data-parent="#accordion" href="#collapseTwo">
+                    <span>2</span> بررسی سفارش
+                  </a>
+                </h4>
+              </div>
+              <div id="collapseTwo" class="panel-collapse collapse">
+                <div class="panel-body">
+                  <div class="table-responsive">
+                    <table class="table table-bordered">
+                      <thead>
+                        <tr>
+                          <th>محصول</th>
+                          <th>قیمت واحد</th>
+                          <th>تعداد</th>
+                          <th>جمع</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for item in cart.items.all %}
+                        <tr>
+                          <td>{{ item.product.name }}</td>
+                          <td>{{ item.product.final_price }} ریال</td>
+                          <td>{{ item.quantity }}</td>
+                          <td>{{ item.total }} ریال</td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                      <tfoot>
+                        <tr>
+                          <td colspan="3" class="text-left"><strong>مبلغ قابل پرداخت</strong></td>
+                          <td><strong>{{ cart.total_price }} ریال</strong></td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="m-t-20 text-center">
+              <button type="submit" form="checkout-form" class="btn btn-primary btn-lg">ثبت سفارش و پرداخت</button>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="col-xs-12 col-sm-3 col-md-3 sidebar">
+          <div class="checkout-progress-sidebar">
+            <div class="panel-group">
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h4 class="unicase-checkout-title">خلاصه سفارش</h4>
+                </div>
+                <div class="panel-body">
+                  {% for item in cart.items.all %}
+                  <div class="row m-b-10">
+                    <div class="col-xs-3">
+                      <img src="{{ item.product.image.url }}" alt="" style="width:50px;" loading="lazy">
+                    </div>
+                    <div class="col-xs-9">
+                      <strong>{{ item.product.name }}</strong>
+                      <br><small>{{ item.quantity }} × {{ item.product.final_price }} ریال</small>
+                    </div>
+                  </div>
+                  {% endfor %}
+                  <hr>
+                  <div class="cart-grand-total">
+                    مبلغ قابل پرداخت <span style="float:left;">{{ cart.total_price }} ریال</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div class="text-center m-t-40">
+      <h2>سبد خرید شما خالی است</h2>
+      <p>لطفاً ابتدا محصولی به سبد خرید اضافه کنید.</p>
+      <a href="{% url 'product_list' %}" class="btn btn-primary m-t-20">مشاهده محصولات</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+    document.getElementById('shipping_method')?.addEventListener('change', function() {
+        var selected = this.options[this.selectedIndex];
+        var price = selected.getAttribute('data-price');
+        var display = document.getElementById('shipping_price_display');
+        if (price) {
+            display.innerHTML = '💰 هزینه ارسال: ' + price + ' ریال';
+        } else {
+            display.innerHTML = '';
+        }
+    });
+</script>
+
+{% endblock %}

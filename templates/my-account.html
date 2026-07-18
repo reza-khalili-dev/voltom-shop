@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}حساب من - Voltom{% endblock %}
+
+{% block breadcrumb %}
+<div class="breadcrumb">
+  <div class="container">
+    <div class="breadcrumb-inner">
+      <ul class="list-inline list-unstyled">
+        <li><a href="{% url 'home' %}">صفحه اصلی</a></li>
+        <li class="active">حساب من</li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="body-content outer-top-xs">
+  <div class="container">
+    <div class="row">
+      <!-- Sidebar -->
+      <div class="col-xs-12 col-sm-12 col-md-3 sidebar">
+        <div class="sidebar-module-container">
+          <div class="sidebar-widget outer-bottom-xs">
+            <h3 class="section-title">حساب کاربری</h3>
+            <div class="sidebar-widget-body m-t-10">
+              <ul class="list-unstyled">
+                <li class="active"><a href="{% url 'profile' %}"><i class="fa fa-user"></i> پروفایل</a></li>
+                <li><a href="{% url 'order_history' %}"><i class="fa fa-shopping-bag"></i> سفارش‌ها</a></li>
+                <li><a href="{% url 'my_wishlist' %}"><i class="fa fa-heart"></i> علاقه‌مندی‌ها</a></li>
+                <li><a href="{% url 'cart_detail' %}"><i class="fa fa-shopping-cart"></i> سبد خرید</a></li>
+                <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i> خروج</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Main Content -->
+      <div class="col-xs-12 col-sm-12 col-md-9 rht-col">
+        <div class="panel-group checkout-steps">
+          <!-- پروفایل -->
+          <div class="panel panel-default checkout-step-01">
+            <div class="panel-heading">
+              <h4 class="unicase-checkout-title">
+                <a data-toggle="collapse" class="" data-parent="#accordion" href="#profileInfo">
+                  <span>1</span> اطلاعات کاربری
+                </a>
+              </h4>
+            </div>
+            <div id="profileInfo" class="panel-collapse collapse in">
+              <div class="panel-body">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="info-container">
+                      <div class="row m-b-10">
+                        <div class="col-xs-4"><strong>نام کاربری:</strong></div>
+                        <div class="col-xs-8">{{ user.username }}</div>
+                      </div>
+                      <div class="row m-b-10">
+                        <div class="col-xs-4"><strong>نام کامل:</strong></div>
+                        <div class="col-xs-8">{{ user.get_full_name|default:'وارد نشده' }}</div>
+                      </div>
+                      <div class="row m-b-10">
+                        <div class="col-xs-4"><strong>ایمیل:</strong></div>
+                        <div class="col-xs-8">{{ user.email|default:'وارد نشده' }}</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="info-container">
+                      <div class="row m-b-10">
+                        <div class="col-xs-4"><strong>شماره تماس:</strong></div>
+                        <div class="col-xs-8">{{ user.phone|default:'وارد نشده' }}</div>
+                      </div>
+                      <div class="row m-b-10">
+                        <div class="col-xs-4"><strong>تاریخ عضویت:</strong></div>
+                        <div class="col-xs-8">{{ user.date_joined|date:"Y/m/d" }}</div>
+                      </div>
+                      <div class="row m-b-10">
+                        <div class="col-xs-4"><strong>آدرس:</strong></div>
+                        <div class="col-xs-8">{{ user.address|default:'وارد نشده' }}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- سفارش‌های اخیر -->
+          <div class="panel panel-default checkout-step-02">
+            <div class="panel-heading">
+              <h4 class="unicase-checkout-title">
+                <a data-toggle="collapse" class="collapsed" data-parent="#accordion" href="#recentOrders">
+                  <span>2</span> سفارش‌های اخیر
+                </a>
+              </h4>
+            </div>
+            <div id="recentOrders" class="panel-collapse collapse">
+              <div class="panel-body">
+                {% if user_orders %}
+                <div class="table-responsive">
+                  <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th>شماره سفارش</th>
+                        <th>تاریخ</th>
+                        <th>مبلغ</th>
+                        <th>وضعیت</th>
+                        <th>جزئیات</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for order in user_orders %}
+                      <tr>
+                        <td>#{{ order.id }}</td>
+                        <td>{{ order.created_at|date:"Y/m/d" }}</td>
+                        <td>{{ order.total_price }} ریال</td>
+                        <td><span class="label label-info">{{ order.get_status_display }}</span></td>
+                        <td><a href="{% url 'track_order' %}?order_id={{ order.id }}" class="btn btn-sm btn-primary">مشاهده</a></td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+                {% else %}
+                <p>هنوز سفارشی ثبت نشده است. <a href="{% url 'product_list' %}">مشاهده محصولات</a></p>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

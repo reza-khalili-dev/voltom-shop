@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ورود / ثبت‌نام - Voltom{% endblock %}
+
+{% block breadcrumb %}
+<div class="breadcrumb">
+  <div class="container">
+    <div class="breadcrumb-inner">
+      <ul class="list-inline list-unstyled">
+        <li><a href="{% url 'home' %}">صفحه اصلی</a></li>
+        <li class="active">ورود / ثبت‌نام</li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="body-content">
+  <div class="container">
+    <div class="sign-in-page">
+      <div class="row">
+        
+        {% if messages %}
+          {% for message in messages %}
+          <div class="col-md-12">
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible">
+              <button type="button" class="close" data-dismiss="alert">&times;</button>
+              {{ message }}
+            </div>
+          </div>
+          {% endfor %}
+        {% endif %}
+
+        <div class="col-md-6 col-sm-6 sign-in">
+          <h4 class="">ورود به حساب کاربری</h4>
+          <p class="">سلام، به حساب کاربری خود خوش آمدید.</p>
+          <form class="register-form outer-top-xs" method="post" action="{% url 'login' %}">
+            {% csrf_token %}
+            <div class="form-group">
+              <label class="info-title" for="id_username">نام کاربری <span>*</span></label>
+              <input type="text" name="username" class="form-control unicase-form-control text-input" id="id_username" required>
+            </div>
+            <div class="form-group">
+              <label class="info-title" for="id_password">رمز عبور <span>*</span></label>
+              <input type="password" name="password" class="form-control unicase-form-control text-input" id="id_password" required>
+            </div>
+            <button type="submit" class="btn-upper btn btn-primary checkout-page-button">وارد شدن</button>
+          </form>
+        </div>
+
+        <div class="col-md-6 col-sm-6 create-new-account">
+          <h4 class="checkout-subtitle">ایجاد حساب کاربری جدید</h4>
+          <p class="text title-tag-line">حساب جدید خود را ایجاد کنید.</p>
+          <form class="register-form outer-top-xs" method="post" action="{% url 'signup' %}">
+            {% csrf_token %}
+            <div class="form-group">
+              <label class="info-title" for="id_signup_username">نام کاربری <span>*</span></label>
+              <input type="text" name="username" class="form-control unicase-form-control text-input" id="id_signup_username" required>
+            </div>
+            <div class="form-group">
+              <label class="info-title" for="id_signup_email">آدرس ایمیل</label>
+              <input type="email" name="email" class="form-control unicase-form-control text-input" id="id_signup_email">
+            </div>
+            <div class="form-group">
+              <label class="info-title" for="id_signup_phone">شماره تلفن <span>*</span></label>
+              <input type="text" name="phone" class="form-control unicase-form-control text-input" id="id_signup_phone" required>
+            </div>
+            <div class="form-group">
+              <label class="info-title" for="id_signup_password1">رمز عبور <span>*</span></label>
+              <input type="password" name="password1" class="form-control unicase-form-control text-input" id="id_signup_password1" required>
+            </div>
+            <div class="form-group">
+              <label class="info-title" for="id_signup_password2">تأیید رمز عبور <span>*</span></label>
+              <input type="password" name="password2" class="form-control unicase-form-control text-input" id="id_signup_password2" required>
+            </div>
+            <button type="submit" class="btn-upper btn btn-primary checkout-page-button">ثبت نام</button>
+          </form>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
