@@ -1,3 +1,14 @@
 from django.contrib import admin
+from .models import Cart, CartItem
 
-# Register your models here.
+
+class CartItemInline(admin.TabularInline):
+    model = CartItem
+    extra = 0
+    readonly_fields = ['total']
+
+
+@admin.register(Cart)
+class CartAdmin(admin.ModelAdmin):
+    list_display = ['user', 'total_items', 'total_price', 'created_at']
+    inlines = [CartItemInline]
