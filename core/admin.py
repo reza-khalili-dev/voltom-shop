@@ -2,9 +2,11 @@ from django.contrib import admin
 from .models import (
     FooterColumn, FooterLink, SiteSettings, ContactInfo, StaticPage,
     Slider, SidebarBanner, SidebarWidget,
-    Menu, MenuItem, NewsletterSubscriber
+    NavigationMenu, SiteBanner, SiteSection, NewsletterSubscriber
 )
 
+
+# ========== تنظیمات اصلی سایت ==========
 
 @admin.register(SiteSettings)
 class SiteSettingsAdmin(admin.ModelAdmin):
@@ -67,6 +69,8 @@ class StaticPageAdmin(admin.ModelAdmin):
     )
 
 
+# ========== اسلایدر و بنرها ==========
+
 @admin.register(Slider)
 class SliderAdmin(admin.ModelAdmin):
     list_display = ['title', 'order', 'is_active']
@@ -88,24 +92,39 @@ class SidebarWidgetAdmin(admin.ModelAdmin):
     list_editable = ['order', 'is_active']
 
 
-class MenuItemInline(admin.TabularInline):
-    model = MenuItem
-    extra = 0
-    fields = ['title', 'url', 'parent', 'order', 'is_active']
+# ========== منوی ناوبری جدید ==========
 
-
-@admin.register(Menu)
-class MenuAdmin(admin.ModelAdmin):
-    list_display = ['name']
-    inlines = [MenuItemInline]
-
-
-@admin.register(MenuItem)
-class MenuItemAdmin(admin.ModelAdmin):
-    list_display = ['title', 'menu', 'parent', 'order', 'is_active']
-    list_filter = ['menu', 'is_active']
+@admin.register(NavigationMenu)
+class NavigationMenuAdmin(admin.ModelAdmin):
+    list_display = ['title', 'page_type', 'category', 'parent', 'order', 'is_active']
+    list_filter = ['is_active', 'page_type']
     list_editable = ['order', 'is_active']
+    search_fields = ['title']
 
+
+# ========== بنرهای سایت ==========
+
+@admin.register(SiteBanner)
+class SiteBannerAdmin(admin.ModelAdmin):
+    list_display = ['title', 'position', 'is_active']
+    list_filter = ['is_active', 'position']
+    fieldsets = (
+        ('اطلاعات بنر', {
+            'fields': ('title', 'image', 'link', 'description', 'position', 'is_active')
+        }),
+    )
+
+
+# ========== عناوین بخش‌ها ==========
+
+@admin.register(SiteSection)
+class SiteSectionAdmin(admin.ModelAdmin):
+    list_display = ['get_section_key_display', 'title', 'is_active']
+    list_filter = ['is_active']
+    search_fields = ['title']
+
+
+# ========== خبرنامه ==========
 
 @admin.register(NewsletterSubscriber)
 class NewsletterSubscriberAdmin(admin.ModelAdmin):
@@ -118,6 +137,8 @@ class NewsletterSubscriberAdmin(admin.ModelAdmin):
         queryset.update(is_active=False)
     make_inactive.short_description = 'غیرفعال کردن مشترکین انتخاب شده'
 
+
+# ========== فوتر ==========
 
 class FooterLinkInline(admin.TabularInline):
     model = FooterLink

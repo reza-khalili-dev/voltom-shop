@@ -83,6 +83,7 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=12, decimal_places=0, verbose_name='قیمت (ریال)')
     discount_price = models.DecimalField(max_digits=12, decimal_places=0, blank=True, null=True, verbose_name='قیمت با تخفیف (ریال)')
     image = models.ImageField(upload_to='products/', verbose_name='تصویر اصلی')
+    image_hover = models.ImageField(upload_to='products/', blank=True, null=True, verbose_name='تصویر هاور')
     warranty_period = models.CharField(max_length=100, blank=True, verbose_name='مدت گارانتی')
     weight = models.DecimalField(max_digits=8, decimal_places=0, blank=True, null=True, verbose_name='وزن (گرم)')
     dimensions = models.CharField(max_length=100, blank=True, verbose_name='ابعاد')

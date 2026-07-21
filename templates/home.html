@@ -1,173 +1,268 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}نیکان شاپ - صفحه اصلی{% endblock %}
+{% block title %}Voltom - فروشگاه اینترنتی لوازم برقی و الکترونیکی{% endblock %}
+{% block meta_description %}فروشگاه اینترنتی Voltom - خرید آنلاین انواع لوازم برقی، خانگی و الکترونیکی با بهترین قیمت و گارانتی معتبر{% endblock %}
+
+{% block extra_css %}{% endblock %}
 
 {% block content %}
 <div class="body-content outer-top-vs" id="top-banner-and-menu">
   <div class="container">
     <div class="row"> 
-      <!-- ==============================================
-           DESKTOP SIDEBAR (Hidden on Mobile)
-           ============================================== -->
+      <!-- ============================================== SIDEBAR ============================================== -->
       <div class="col-xs-12 col-sm-12 col-md-3 sidebar"> 
+        
+        <!-- ================================== TOP NAVIGATION ================================== -->
         <div class="side-menu animate-dropdown outer-bottom-xs">
           <div class="head"><i class="icon fa fa-align-justify fa-fw"></i>دسته بندی ها</div>
           <nav class="yamm megamenu-horizontal">
             <ul class="nav">
-              {% for category in all_categories %}
-                {% if not category.parent %}
-                <li><a href="{{ category.get_absolute_url }}">{{ category.name }}</a></li>
-                {% endif %}
-              {% empty %}
-                <li><a href="#">دسته‌بندی موجود نیست</a></li>
-              {% endfor %}
+              {% if all_categories %}
+                {% for category in all_categories %}
+                  {% if not category.parent %}
+                  <li class="dropdown menu-item">
+                    <a href="{{ category.get_absolute_url }}" class="dropdown-toggle" data-toggle="dropdown">
+                      <i class="icon fa fa-plug" aria-hidden="true"></i>{{ category.name }}
+                    </a>
+                    {% with children=category.children.all %}
+                    {% if children %}
+                    <ul class="dropdown-menu mega-menu">
+                      <li class="yamm-content">
+                        <div class="row">
+                          {% for child in children %}
+                          <div class="col-xs-12 col-sm-12 col-lg-4">
+                            <ul>
+                              <li><a href="{{ child.get_absolute_url }}">{{ child.name }}</a></li>
+                            </ul>
+                          </div>
+                          {% endfor %}
+                        </div>
+                      </li>
+                    </ul>
+                    {% endif %}
+                    {% endwith %}
+                  </li>
+                  {% endif %}
+                {% endfor %}
+              {% else %}
+              <li class="dropdown menu-item"><a href="#"><i class="icon fa fa-plug" aria-hidden="true"></i>تلویزیون</a></li>
+              <li class="dropdown menu-item"><a href="#"><i class="icon fa fa-plug" aria-hidden="true"></i>یخچال و فریزر</a></li>
+              <li class="dropdown menu-item"><a href="#"><i class="icon fa fa-plug" aria-hidden="true"></i>ماشین لباسشویی</a></li>
+              <li class="dropdown menu-item"><a href="#"><i class="icon fa fa-plug" aria-hidden="true"></i>جاروبرقی</a></li>
+              <li class="dropdown menu-item"><a href="#"><i class="icon fa fa-plug" aria-hidden="true"></i>اتو و بخارشوی</a></li>
+              <li class="dropdown menu-item"><a href="#"><i class="icon fa fa-plug" aria-hidden="true"></i>ماکروویو</a></li>
+              <li class="dropdown menu-item"><a href="#"><i class="icon fa fa-plug" aria-hidden="true"></i>پنکه و کولر</a></li>
+              <li class="dropdown menu-item"><a href="#"><i class="icon fa fa-plug" aria-hidden="true"></i>لوازم صوتی و تصویری</a></li>
+              {% endif %}
             </ul>
           </nav>
         </div>
+        <!-- /.side-menu --> 
 
-        {% if hot_deals %}
+        <!-- ============================================== HOT DEALS ============================================== -->
         <div class="sidebar-widget hot-deals outer-bottom-xs">
-          <h3 class="section-title">فروش ویژه</h3>
+          <h3 class="section-title">{{ site_sections.hot_deals_title.title|default:'فروش ویژه' }}</h3>
           <div class="owl-carousel sidebar-carousel custom-carousel owl-theme outer-top-ss">
-            {% for product in hot_deals %}
-            <div class="item">
-              <div class="products">
-                <div class="hot-deal-wrapper">
-                    <div class="image">
-                        <a href="{{ product.get_absolute_url }}">
-                            <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
-                            {% if product.image_hover %}
-                            <img src="{{ product.image_hover.url }}" alt="" class="hover-image" loading="lazy">
-                            {% endif %}
-                        </a>
-                    </div>
-                    {% if product.hot_deal_discount %}
-                    <div class="sale-offer-tag"><span>{{ product.hot_deal_discount }}%<br>تخفیف</span></div>
-                    {% endif %}
-                    {% if product.hot_deal_end %}
-                    <div class="timing-wrapper" data-end="{{ product.hot_deal_end|date:'Y/m/d H:i:s' }}">
-                        <div class="box-wrapper"><div class="date box"><span class="key days">0</span><span class="value">روز</span></div></div>
-                        <div class="box-wrapper"><div class="hour box"><span class="key hours">0</span><span class="value">ساعت</span></div></div>
-                        <div class="box-wrapper"><div class="minutes box"><span class="key mins">0</span><span class="value">دقیقه</span></div></div>
-                        <div class="box-wrapper"><div class="seconds box"><span class="key secs">0</span><span class="value">ثانیه</span></div></div>
-                    </div>
-                    {% endif %}
-                </div>
-                <div class="product-info text-left m-t-20">
-                  <h3 class="name"><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h3>
-                  <div class="rating rateit-small"></div>
-                  <div class="product-price">
-                    <span class="price">{{ product.final_price }} ریال</span>
-                    {% if product.discount_price %}
-                    <span class="price-before-discount">{{ product.price }} ریال</span>
-                    {% endif %}
-                  </div>
-                </div>
-                <div class="cart clearfix animate-effect">
-                  <div class="action">
-                    <div class="add-cart-button btn-group">
-                      <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary icon" data-toggle="tooltip" title="افزودن به سبد خرید">
-                        <i class="fa fa-shopping-cart"></i>
+            {% if hot_deals %}
+              {% for product in hot_deals %}
+              <div class="item">
+                <div class="products">
+                  <div class="hot-deal-wrapper">
+                    <div class="image"> 
+                      <a href="{{ product.get_absolute_url }}">
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
+                        {% if product.image_hover %}<img src="{{ product.image_hover.url }}" alt="{{ product.name }}" class="hover-image" loading="lazy">{% endif %}
                       </a>
-                      <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary cart-btn">به سبد خرید اضافه کنید</a>
+                    </div>
+                    {% if product.hot_deal_discount %}<div class="sale-offer-tag"><span>{{ product.hot_deal_discount }}%<br>تخفیف</span></div>{% endif %}
+                    {% if product.hot_deal_end %}
+                    <div class="timing-wrapper" data-end="{{ product.hot_deal_end|date:'c' }}">
+                      <div class="box-wrapper"><div class="date box"><span class="key days">0</span><span class="value">روز</span></div></div>
+                      <div class="box-wrapper"><div class="hour box"><span class="key hours">0</span><span class="value">ساعت</span></div></div>
+                      <div class="box-wrapper"><div class="minutes box"><span class="key mins">0</span><span class="value">دقیقه</span></div></div>
+                      <div class="box-wrapper"><div class="seconds box"><span class="key secs">0</span><span class="value">ثانیه</span></div></div>
+                    </div>
+                    {% endif %}
+                  </div>
+                  <div class="product-info text-left m-t-20">
+                    <h3 class="name"><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h3>
+                    <div class="rating rateit-small"></div>
+                    <div class="product-price">
+                      <span class="price">{{ product.final_price|floatformat:0 }} ریال</span>
+                      {% if product.discount_price %}<span class="price-before-discount">{{ product.price|floatformat:0 }} ریال</span>{% endif %}
+                    </div>
+                  </div>
+                  <div class="cart clearfix animate-effect">
+                    <div class="action">
+                      <div class="add-cart-button btn-group">
+                      <button class="btn btn-primary icon" type="button" onclick="window.location.href='{% url 'add_to_cart' product.id %}'">
+                        <i class="fa fa-shopping-cart"></i>
+                      </button>
+                      <button class="btn btn-primary cart-btn" type="button" onclick="window.location.href='{% url 'add_to_cart' product.id %}'">
+                        به سبد خرید اضافه کنید
+                      </button>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            {% endfor %}
+              {% endfor %}
+            {% else %}
+            <div class="item"><div class="products"><div class="hot-deal-wrapper"><div class="image"><a href="#"><img src="{% static 'images/hot-deals/p13.jpg' %}" alt="" loading="lazy"><img src="{% static 'images/hot-deals/p13_hover.jpg' %}" alt="" class="hover-image" loading="lazy"></a></div><div class="sale-offer-tag"><span>49%<br>تخفیف</span></div><div class="timing-wrapper"><div class="box-wrapper"><div class="date box"><span class="key">120</span><span class="value">روز</span></div></div><div class="box-wrapper"><div class="hour box"><span class="key">20</span><span class="value">ساعت</span></div></div><div class="box-wrapper"><div class="minutes box"><span class="key">36</span><span class="value">دقیقه</span></div></div><div class="box-wrapper"><div class="seconds box"><span class="key">60</span><span class="value">ثانیه</span></div></div></div></div><div class="product-info text-left m-t-20"><h3 class="name"><a href="#">چاپ گلدار دکمه دار</a></h3><div class="rating rateit-small"></div><div class="product-price"><span class="price">600.00 ریال</span><span class="price-before-discount">800.00 ریال</span></div></div><div class="cart clearfix animate-effect"><div class="action"><div class="add-cart-button btn-group"><button class="btn btn-primary icon" type="button"><i class="fa fa-shopping-cart"></i></button><button class="btn btn-primary cart-btn" type="button">به سبد خرید اضافه کنید</button></div></div></div></div></div>
+            <div class="item"><div class="products"><div class="hot-deal-wrapper"><div class="image"><a href="#"><img src="{% static 'images/hot-deals/p14.jpg' %}" alt="" loading="lazy"><img src="{% static 'images/hot-deals/p14_hover.jpg' %}" alt="" class="hover-image" loading="lazy"></a></div><div class="sale-offer-tag"><span>35%<br>تخفیف</span></div><div class="timing-wrapper"><div class="box-wrapper"><div class="date box"><span class="key">120</span><span class="value">روز</span></div></div><div class="box-wrapper"><div class="hour box"><span class="key">20</span><span class="value">ساعت</span></div></div><div class="box-wrapper"><div class="minutes box"><span class="key">36</span><span class="value">دقیقه</span></div></div><div class="box-wrapper"><div class="seconds box"><span class="key">60</span><span class="value">ثانیه</span></div></div></div></div><div class="product-info text-left m-t-20"><h3 class="name"><a href="#">چاپ گلدار دکمه دار</a></h3><div class="rating rateit-small"></div><div class="product-price"><span class="price">600.00 ریال</span><span class="price-before-discount">800.00 ریال</span></div></div><div class="cart clearfix animate-effect"><div class="action"><div class="add-cart-button btn-group"><button class="btn btn-primary icon" type="button"><i class="fa fa-shopping-cart"></i></button><button class="btn btn-primary cart-btn" type="button">به سبد خرید اضافه کنید</button></div></div></div></div></div>
+            <div class="item"><div class="products"><div class="hot-deal-wrapper"><div class="image"><a href="#"><img src="{% static 'images/hot-deals/p15.jpg' %}" alt="" loading="lazy"><img src="{% static 'images/hot-deals/p15_hover.jpg' %}" alt="" class="hover-image" loading="lazy"></a></div><div class="sale-offer-tag"><span>35%<br>تخفیف</span></div><div class="timing-wrapper"><div class="box-wrapper"><div class="date box"><span class="key">120</span><span class="value">روز</span></div></div><div class="box-wrapper"><div class="hour box"><span class="key">20</span><span class="value">ساعت</span></div></div><div class="box-wrapper"><div class="minutes box"><span class="key">36</span><span class="value">دقیقه</span></div></div><div class="box-wrapper"><div class="seconds box"><span class="key">60</span><span class="value">ثانیه</span></div></div></div></div><div class="product-info text-left m-t-20"><h3 class="name"><a href="#">چاپ گلدار دکمه دار</a></h3><div class="rating rateit-small"></div><div class="product-price"><span class="price">600.00 ریال</span><span class="price-before-discount">800.00 ریال</span></div></div><div class="cart clearfix animate-effect"><div class="action"><div class="add-cart-button btn-group"><button class="btn btn-primary icon" type="button"><i class="fa fa-shopping-cart"></i></button><button class="btn btn-primary cart-btn" type="button">به سبد خرید اضافه کنید</button></div></div></div></div></div>
+            {% endif %}
           </div>
         </div>
-        {% endif %}
 
-        {% if featured_products %}
+        <!-- ============================================== SPECIAL OFFER ============================================== -->
         <div class="sidebar-widget outer-bottom-small">
-          <h3 class="section-title">پیشنهاد ویژه</h3>
+          <h3 class="section-title">{{ site_sections.special_offer_title.title|default:'پیشنهاد ویژه' }}</h3>
           <div class="sidebar-widget-body outer-top-xs">
-            {% for product in featured_products|slice:":3" %}
-            <div class="product-micro">
-              <div class="row product-micro-row">
-                <div class="col col-xs-5">
-                  <div class="product-image">
-                    <div class="image"><a href="{{ product.get_absolute_url }}"><img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy"></a></div>
-                  </div>
-                </div>
-                <div class="col col-xs-7">
-                  <div class="product-info">
-                    <h3 class="name"><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h3>
-                    <div class="product-price"><span class="price">{{ product.final_price }} ریال</span></div>
-                  </div>
-                </div>
-              </div>
+            <div class="owl-carousel sidebar-carousel special-offer custom-carousel owl-theme outer-top-xs">
+              {% if featured_products %}
+              <div class="item"><div class="products special-product">
+                {% for product in featured_products|slice:":3" %}
+                <div class="product"><div class="product-micro"><div class="row product-micro-row">
+                  <div class="col col-xs-5"><div class="product-image"><div class="image"><a href="{{ product.get_absolute_url }}"><img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy"></a></div></div></div>
+                  <div class="col col-xs-7"><div class="product-info"><h3 class="name"><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h3><div class="rating rateit-small"></div><div class="product-price"><span class="price">{{ product.final_price|floatformat:0 }} ریال</span></div></div></div>
+                </div></div></div>
+                {% endfor %}
+              </div></div>
+              {% if featured_products|length > 3 %}
+              <div class="item"><div class="products special-product">
+                {% for product in featured_products|slice:"3:6" %}
+                <div class="product"><div class="product-micro"><div class="row product-micro-row">
+                  <div class="col col-xs-5"><div class="product-image"><div class="image"><a href="{{ product.get_absolute_url }}"><img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy"></a></div></div></div>
+                  <div class="col col-xs-7"><div class="product-info"><h3 class="name"><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h3><div class="rating rateit-small"></div><div class="product-price"><span class="price">{{ product.final_price|floatformat:0 }} ریال</span></div></div></div>
+                </div></div></div>
+                {% endfor %}
+              </div></div>
+              {% endif %}
+              {% else %}
+              <div class="item"><div class="products special-product">
+                <div class="product"><div class="product-micro"><div class="row product-micro-row"><div class="col col-xs-5"><div class="product-image"><div class="image"><a href="#"><img src="{% static 'images/products/p5.jpg' %}" alt="" loading="lazy"></a></div></div></div><div class="col col-xs-7"><div class="product-info"><h3 class="name"><a href="#">پیراهن چاپ گل</a></h3><div class="rating rateit-small"></div><div class="product-price"><span class="price">450.99 ریال</span></div></div></div></div></div></div>
+                <div class="product"><div class="product-micro"><div class="row product-micro-row"><div class="col col-xs-5"><div class="product-image"><div class="image"><a href="#"><img src="{% static 'images/products/p9.jpg' %}" alt="" loading="lazy"></a></div></div></div><div class="col col-xs-7"><div class="product-info"><h3 class="name"><a href="#">پیراهن چاپ گل</a></h3><div class="rating rateit-small"></div><div class="product-price"><span class="price">450.99 ریال</span></div></div></div></div></div></div>
+                <div class="product"><div class="product-micro"><div class="row product-micro-row"><div class="col col-xs-5"><div class="product-image"><div class="image"><a href="#"><img src="{% static 'images/products/p11.jpg' %}" alt="" loading="lazy"></a></div></div></div><div class="col col-xs-7"><div class="product-info"><h3 class="name"><a href="#">پیراهن چاپ گل</a></h3><div class="rating rateit-small"></div><div class="product-price"><span class="price">450.99 ریال</span></div></div></div></div></div></div>
+              </div></div>
+              <div class="item"><div class="products special-product">
+                <div class="product"><div class="product-micro"><div class="row product-micro-row"><div class="col col-xs-5"><div class="product-image"><div class="image"><a href="#"><img src="{% static 'images/products/p15.jpg' %}" alt="" loading="lazy"></a></div></div></div><div class="col col-xs-7"><div class="product-info"><h3 class="name"><a href="#">پیراهن چاپ گل</a></h3><div class="rating rateit-small"></div><div class="product-price"><span class="price">450.99 ریال</span></div></div></div></div></div></div>
+                <div class="product"><div class="product-micro"><div class="row product-micro-row"><div class="col col-xs-5"><div class="product-image"><div class="image"><a href="#"><img src="{% static 'images/products/p13.jpg' %}" alt="" loading="lazy"></a></div></div></div><div class="col col-xs-7"><div class="product-info"><h3 class="name"><a href="#">پیراهن چاپ گل</a></h3><div class="rating rateit-small"></div><div class="product-price"><span class="price">450.99 ریال</span></div></div></div></div></div></div>
+                <div class="product"><div class="product-micro"><div class="row product-micro-row"><div class="col col-xs-5"><div class="product-image"><div class="image"><a href="#"><img src="{% static 'images/products/p12.jpg' %}" alt="" loading="lazy"></a></div></div></div><div class="col col-xs-7"><div class="product-info"><h3 class="name"><a href="#">پیراهن چاپ گل</a></h3><div class="rating rateit-small"></div><div class="product-price"><span class="price">450.99 ریال</span></div></div></div></div></div></div>
+              </div></div>
+              <div class="item"><div class="products special-product">
+                <div class="product"><div class="product-micro"><div class="row product-micro-row"><div class="col col-xs-5"><div class="product-image"><div class="image"><a href="#"><img src="{% static 'images/products/p1.jpg' %}" alt="" loading="lazy"></a></div></div></div><div class="col col-xs-7"><div class="product-info"><h3 class="name"><a href="#">پیراهن چاپ گل</a></h3><div class="rating rateit-small"></div><div class="product-price"><span class="price">450.99 ریال</span></div></div></div></div></div></div>
+                <div class="product"><div class="product-micro"><div class="row product-micro-row"><div class="col col-xs-5"><div class="product-image"><div class="image"><a href="#"><img src="{% static 'images/products/p3.jpg' %}" alt="" loading="lazy"></a></div></div></div><div class="col col-xs-7"><div class="product-info"><h3 class="name"><a href="#">پیراهن چاپ گل</a></h3><div class="rating rateit-small"></div><div class="product-price"><span class="price">450.99 ریال</span></div></div></div></div></div></div>
+                <div class="product"><div class="product-micro"><div class="row product-micro-row"><div class="col col-xs-5"><div class="product-image"><div class="image"><a href="#"><img src="{% static 'images/products/p7.jpg' %}" alt="" loading="lazy"></a></div></div></div><div class="col col-xs-7"><div class="product-info"><h3 class="name"><a href="#">پیراهن چاپ گل</a></h3><div class="rating rateit-small"></div><div class="product-price"><span class="price">450.99 ریال</span></div></div></div></div></div></div>
+              </div></div>
+              {% endif %}
             </div>
-            {% endfor %}
           </div>
         </div>
-        {% endif %}
 
-        {% if all_tags %}
+        <!-- ============================================== PRODUCT TAGS ============================================== -->
         <div class="sidebar-widget product-tag">
-          <h3 class="section-title">برچسب های محصول</h3>
+          <h3 class="section-title">{{ site_sections.product_tags_title.title|default:'برچسب های محصول' }}</h3>
           <div class="sidebar-widget-body outer-top-xs">
             <div class="tag-list">
-              {% for tag in all_tags %}
-              <a class="item" href="{% url 'product_list' %}?tag={{ tag.slug }}">{{ tag.name }}</a>
-              {% endfor %}
+              {% if all_tags %}
+                {% for tag in all_tags %}
+                <a class="item" title="{{ tag.name }}" href="{% url 'product_list' %}?tag={{ tag.slug }}">{{ tag.name }}</a>
+                {% endfor %}
+              {% else %}
+              <a class="item" title="تلفن" href="{% url 'product_list' %}">تلفن</a>
+              <a class="item active" title="الکترونیک" href="{% url 'product_list' %}">الکترونیک</a>
+              <a class="item" title="گوشی های هوشمند" href="{% url 'product_list' %}">تلفن هوشمند</a>
+              <a class="item" title="Furniture" href="{% url 'product_list' %}">مبل</a>
+              <a class="item" title="T-shirt" href="{% url 'product_list' %}">تی شرت</a>
+              <a class="item" title="Sweatpants" href="{% url 'product_list' %}">شلوار</a>
+              <a class="item" title="Sneaker" href="{% url 'product_list' %}">کتانی</a>
+              <a class="item" title="Toys" href="{% url 'product_list' %}">اسباب بازی</a>
+              <a class="item" title="Rose" href="{% url 'product_list' %}">رز</a>
+              {% endif %}
             </div>
           </div>
         </div>
-        {% endif %}
 
-        {% if special_offers %}
+        <!-- ============================================== SPECIAL DEALS ============================================== -->
         <div class="sidebar-widget outer-bottom-small">
-          <h3 class="section-title">تخفیف های ویژه</h3>
+          <h3 class="section-title">{{ site_sections.special_deals_title.title|default:'تخفیف های ویژه' }}</h3>
           <div class="sidebar-widget-body outer-top-xs">
-            {% for product in special_offers|slice:":3" %}
-            <div class="product-micro">
-              <div class="row product-micro-row">
-                <div class="col col-xs-5">
-                  <div class="product-image">
-                    <div class="image"><a href="{{ product.get_absolute_url }}"><img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy"></a></div>
-                  </div>
-                </div>
-                <div class="col col-xs-7">
-                  <div class="product-info">
-                    <h3 class="name"><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h3>
-                    <div class="product-price"><span class="price">{{ product.final_price }} ریال</span></div>
-                  </div>
-                </div>
-              </div>
+            <div class="owl-carousel sidebar-carousel special-offer custom-carousel owl-theme outer-top-xs">
+              {% if special_offers %}
+              <div class="item"><div class="products special-product">
+                {% for product in special_offers|slice:":3" %}
+                <div class="product"><div class="product-micro"><div class="row product-micro-row">
+                  <div class="col col-xs-5"><div class="product-image"><div class="image"><a href="{{ product.get_absolute_url }}"><img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy"></a></div></div></div>
+                  <div class="col col-xs-7"><div class="product-info"><h3 class="name"><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h3><div class="rating rateit-small"></div><div class="product-price"><span class="price">{{ product.final_price|floatformat:0 }} ریال</span></div></div></div>
+                </div></div></div>
+                {% endfor %}
+              </div></div>
+              {% else %}
+              <div class="item"><div class="products special-product">
+                <div class="product"><div class="product-micro"><div class="row product-micro-row"><div class="col col-xs-5"><div class="product-image"><div class="image"><a href="#"><img src="{% static 'images/products/p8.jpg' %}" alt="" loading="lazy"></a></div></div></div><div class="col col-xs-7"><div class="product-info"><h3 class="name"><a href="#">پیراهن چاپ گل</a></h3><div class="rating rateit-small"></div><div class="product-price"><span class="price">450.99 ریال</span></div></div></div></div></div></div>
+                <div class="product"><div class="product-micro"><div class="row product-micro-row"><div class="col col-xs-5"><div class="product-image"><div class="image"><a href="#"><img src="{% static 'images/products/p5.jpg' %}" alt="" loading="lazy"></a></div></div></div><div class="col col-xs-7"><div class="product-info"><h3 class="name"><a href="#">پیراهن چاپ گل</a></h3><div class="rating rateit-small"></div><div class="product-price"><span class="price">450.99 ریال</span></div></div></div></div></div></div>
+                <div class="product"><div class="product-micro"><div class="row product-micro-row"><div class="col col-xs-5"><div class="product-image"><div class="image"><a href="#"><img src="{% static 'images/products/p6.jpg' %}" alt="تصویر" loading="lazy"></a></div></div></div><div class="col col-xs-7"><div class="product-info"><h3 class="name"><a href="#">پیراهن چاپ گل</a></h3><div class="rating rateit-small"></div><div class="product-price"><span class="price">450.99 ریال</span></div></div></div></div></div></div>
+              </div></div>
+              <div class="item"><div class="products special-product">
+                <div class="product"><div class="product-micro"><div class="row product-micro-row"><div class="col col-xs-5"><div class="product-image"><div class="image"><a href="#"><img src="{% static 'images/products/p8.jpg' %}" alt="" loading="lazy"></a></div></div></div><div class="col col-xs-7"><div class="product-info"><h3 class="name"><a href="#">پیراهن چاپ گل</a></h3><div class="rating rateit-small"></div><div class="product-price"><span class="price">450.99 ریال</span></div></div></div></div></div></div>
+                <div class="product"><div class="product-micro"><div class="row product-micro-row"><div class="col col-xs-5"><div class="product-image"><div class="image"><a href="#"><img src="{% static 'images/products/p7.jpg' %}" alt="" loading="lazy"></a></div></div></div><div class="col col-xs-7"><div class="product-info"><h3 class="name"><a href="#">پیراهن چاپ گل</a></h3><div class="rating rateit-small"></div><div class="product-price"><span class="price">450.99 ریال</span></div></div></div></div></div></div>
+                <div class="product"><div class="product-micro"><div class="row product-micro-row"><div class="col col-xs-5"><div class="product-image"><div class="image"><a href="#"><img src="{% static 'images/products/p6.jpg' %}" alt="" loading="lazy"></a></div></div></div><div class="col col-xs-7"><div class="product-info"><h3 class="name"><a href="#">پیراهن چاپ گل</a></h3><div class="rating rateit-small"></div><div class="product-price"><span class="price">450.99 ریال</span></div></div></div></div></div></div>
+              </div></div>
+              <div class="item"><div class="products special-product">
+                <div class="product"><div class="product-micro"><div class="row product-micro-row"><div class="col col-xs-5"><div class="product-image"><div class="image"><a href="#"><img src="{% static 'images/products/p5.jpg' %}" alt="تصویر" loading="lazy"></a></div></div></div><div class="col col-xs-7"><div class="product-info"><h3 class="name"><a href="#">پیراهن چاپ گل</a></h3><div class="rating rateit-small"></div><div class="product-price"><span class="price">450.99 ریال</span></div></div></div></div></div></div>
+                <div class="product"><div class="product-micro"><div class="row product-micro-row"><div class="col col-xs-5"><div class="product-image"><div class="image"><a href="#"><img src="{% static 'images/products/p4.jpg' %}" alt="" loading="lazy"></a></div></div></div><div class="col col-xs-7"><div class="product-info"><h3 class="name"><a href="#">پیراهن چاپ گل</a></h3><div class="rating rateit-small"></div><div class="product-price"><span class="price">450.99 ریال</span></div></div></div></div></div></div>
+                <div class="product"><div class="product-micro"><div class="row product-micro-row"><div class="col col-xs-5"><div class="product-image"><div class="image"><a href="#"><img src="{% static 'images/products/p13.jpg' %}" alt="تصویر" loading="lazy"></a></div></div></div><div class="col col-xs-7"><div class="product-info"><h3 class="name"><a href="#">پیراهن چاپ گل</a></h3><div class="rating rateit-small"></div><div class="product-price"><span class="price">450.99 ریال</span></div></div></div></div></div></div>
+              </div></div>
+              {% endif %}
             </div>
-            {% endfor %}
           </div>
         </div>
-        {% endif %}
 
+        <!-- ============================================== NEWSLETTER ============================================== -->
         <div class="sidebar-widget newsletter outer-bottom-small">
-          <h3 class="section-title">خبرنامه ها</h3>
+          <h3 class="section-title">{{ site_sections.newsletter_title.title|default:'خبرنامه ها' }}</h3>
           <div class="sidebar-widget-body outer-top-xs">
-            <p>برای دریافت خبرنامه ما ثبت نام کنید!</p>
+            <p>{{ site_sections.newsletter_desc.title|default:'برای دریافت خبرنامه ما ثبت نام کنید!' }}</p>
             <form method="post" action="{% url 'newsletter_subscribe' %}">
               {% csrf_token %}
               <div class="form-group">
-                <label class="sr-only" for="newsletterEmail">آدرس ایمیل</label>
-                <input type="email" class="form-control" id="newsletterEmail" name="email" placeholder="مشترک شدن در خبرنامه ما">
+                <input type="email" class="form-control" name="email" placeholder="ایمیل خود را وارد کنید">
               </div>
               <button class="btn btn-primary" type="submit">اشتراک در</button>
             </form>
           </div>
         </div>
+
+        <!-- ============================================== Testimonials ============================================== -->
+        <div class="sidebar-widget outer-top-vs">
+          <div id="advertisement" class="advertisement">
+            <div class="item">
+              <div class="avatar"><img src="{% static 'images/testimonials/member1.png' %}" alt="تصویر" loading="lazy"></div>
+              <div class="testimonials"><em>"</em>بهترین فروشگاه لوازم برقی با قیمت‌های عالی و ارسال سریع<em>"</em></div>
+              <div class="clients_author"><span>شرکت</span>حمید شریفی<span></span></div>
+            </div>
+            <div class="item">
+              <div class="avatar"><img src="{% static 'images/testimonials/member3.png' %}" alt="تصویر" loading="lazy"></div>
+              <div class="testimonials"><em>"</em>تنوع محصولات فوق‌العاده است و مشاوره خرید عالی دارن<em>"</em></div>
+              <div class="clients_author">طراحی های استفن دو <span>اکسپریا</span></div>
+            </div>
+            <div class="item">
+              <div class="avatar"><img src="{% static 'images/testimonials/member2.png' %}" alt="تصویر" loading="lazy"></div>
+              <div class="testimonials"><em>"</em>گارانتی معتبر و خدمات پس از فروش بی‌نظیر<em>"</em></div>
+              <div class="clients_author">ساراها اسمیت <span>داتسون و شرکت</span></div>
+            </div>
+          </div>
+        </div>
+
       </div>
+      <!-- /.sidemenu-holder --> 
       
-      <!-- ==============================================
-           MAIN CONTENT AREA
-           ============================================== -->
+      <!-- ============================================== CONTENT ============================================== -->
       <div class="col-xs-12 col-sm-12 col-md-9 homebanner-holder"> 
         
-        <!-- ==============================================
-             SLIDER
-             ============================================== -->
+        <!-- ========================================= SECTION – HERO ========================================= -->
         {% if sliders %}
         <div id="hero">
           <div id="owl-main" class="owl-carousel owl-inner-nav owl-ui-sm">
@@ -177,9 +272,7 @@
                 <div class="caption bg-color vertical-center text-left">
                   <div class="slider-header fadeInDown-1">{{ slider.title }}</div>
                   <div class="big-text fadeInDown-1">{{ slider.subtitle }}</div>
-                  {% if slider.description %}
-                  <div class="excerpt fadeInDown-2 hidden-xs"><span>{{ slider.description }}</span></div>
-                  {% endif %}
+                  {% if slider.description %}<div class="excerpt fadeInDown-2 hidden-xs"><span>{{ slider.description }}</span></div>{% endif %}
                   <div class="button-holder fadeInDown-3"><a href="{{ slider.link|default:'#' }}" class="btn-lg btn btn-uppercase btn-primary shop-now-button">{{ slider.button_text }}</a></div>
                 </div>
               </div>
@@ -189,192 +282,239 @@
         </div>
         {% else %}
         <div id="hero">
-          <div class="item" style="background-image: url({% static 'images/sliders/01.jpg' %}); background-size: cover; height: 400px; display: flex; align-items: center; justify-content: center;">
-            <h2 style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.7);">به فروشگاه نیکان شاپ خوش آمدید</h2>
-          </div>
-        </div>
-        {% endif %}
-        <!-- ==============================================
-            MOBILE CATEGORY CARDS
-            ============================================== -->
-        <div class="mobile-category-grid">
-          <div class="section-title-mobile">دسته‌بندی‌ها</div>
-          <div class="category-card-grid">
-            
-            {% for category in all_categories %}
-              {% if not category.parent %}
-              <a href="{{ category.get_absolute_url }}" class="category-card">
-                <div class="icon-wrapper">
-                  {% if 'تیشرت' in category.name or 'بلوز' in category.name %}
-                    <i class="fa fa-tshirt"></i>
-                  {% elif 'جوراب' in category.name %}
-                    <i class="fa fa-socks"></i>
-                  {% elif 'زمستان' in category.name %}
-                    <i class="fa fa-snowflake"></i>
-                  {% elif 'ست' in category.name or 'زنانه' in category.name %}
-                    <i class="fa fa-venus"></i>
-                  {% elif 'شلوار' in category.name %}
-                    <i class="fa fa-person"></i>
-                  {% elif 'مانتو' in category.name %}
-                    <i class="fa fa-vest"></i>
-                  {% elif 'تاپ' in category.name or 'کراپ' in category.name %}
-                    <i class="fa fa-shirt"></i>
-                  {% else %}
-                    <i class="fa fa-tag"></i>
-                  {% endif %}
+          <div id="owl-main" class="owl-carousel owl-inner-nav owl-ui-sm">
+            <div class="item" style="background-image: url({% static 'images/sliders/01.jpg' %});">
+              <div class="container-fluid">
+                <div class="caption bg-color vertical-center text-left">
+                  <div class="slider-header fadeInDown-1">برندهای برتر</div>
+                  <div class="big-text fadeInDown-1">مجموعه های جدید</div>
+                  <div class="excerpt fadeInDown-2 hidden-xs"><span>جدیدترین لوازم برقی و الکترونیکی با بهترین قیمت</span></div>
+                  <div class="button-holder fadeInDown-3"><a href="{% url 'product_list' %}" class="btn-lg btn btn-uppercase btn-primary shop-now-button">اکنون خرید کنید</a></div>
                 </div>
-                <span class="cat-name">{{ category.name }}</span>
-                <div class="gradient-overlay"></div>
-              </a>
-              {% endif %}
-            {% endfor %}
-            
-          </div>
-        </div>
-        <!-- ==============================================
-             NEW PRODUCTS
-             ============================================== -->
-        {% if new_products %}
-        <div id="product-tabs-slider" class="scroll-tabs outer-top-vs">
-          <div class="more-info-tab clearfix">
-            <h3 class="new-product-title pull-left">محصولات جدید</h3>
-          </div>
-          <div class="tab-content outer-top-xs">
-            <div class="product-slider">
-              <div class="owl-carousel home-owl-carousel custom-carousel owl-theme">
-                {% for product in new_products %}
-                <div class="item item-carousel">
-                  <div class="products">
-                    <div class="product">
-                      <div class="product-image">
-                        <div class="image">
-                          <a href="{{ product.get_absolute_url }}">
-                            <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
-                            {% if product.image_hover %}
-                            <img src="{{ product.image_hover.url }}" alt="" class="hover-image" loading="lazy">
-                            {% endif %}
-                          </a>
-                        </div>
-                        {% if product.discount_price %}<div class="tag sale"><span>فروش</span></div>{% endif %}
-                        {% if product.is_hot_deal %}<div class="tag hot"><span>داغ</span></div>{% endif %}
-                      </div>
-                      <div class="product-info text-left">
-                        <h3 class="name"><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h3>
-                        <div class="rating rateit-small"></div>
-                        <div class="product-price">
-                          {% if product.discount_price %}
-                            <span class="price">{{ product.discount_price }} ریال</span>
-                            <span class="price-before-discount">{{ product.price }} ریال</span>
-                          {% else %}
-                            <span class="price">{{ product.price }} ریال</span>
-                          {% endif %}
-                        </div>
-                      </div>
-                      <div class="cart clearfix animate-effect">
-                        <div class="action">
-                          <ul class="list-unstyled">
-                            <li class="add-cart-button btn-group">
-                              <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary icon" data-toggle="tooltip" title="افزودن به سبد خرید">
-                                <i class="fa fa-shopping-cart"></i>
-                              </a>
-                              <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary cart-btn">به سبد خرید اضافه کنید</a>
-                            </li>
-                            <li class="lnk wishlist">
-                              <a class="add-to-cart" href="{% url 'add_to_wishlist' product.id %}" data-toggle="tooltip" title="لیست علاقه مندیها">
-                                <i class="icon fa fa-heart"></i>
-                              </a>
-                            </li>
-                            <li class="lnk">
-                              <a class="add-to-cart" href="{% url 'add_to_compare' product.id %}" data-toggle="tooltip" title="مقایسه کنید">
-                                <i class="fa fa-signal"></i>
-                              </a>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+              </div>
+            </div>
+            <div class="item" style="background-image: url({% static 'images/sliders/02.jpg' %});">
+              <div class="container-fluid">
+                <div class="caption bg-color vertical-center text-left">
+                  <div class="slider-header fadeInDown-1">تخفیفات ویژه</div>
+                  <div class="big-text fadeInDown-1">لوازم خانگی</div>
+                  <div class="excerpt fadeInDown-2 hidden-xs"><span>تا ۴۰٪ تخفیف برای محصولات منتخب</span></div>
+                  <div class="button-holder fadeInDown-3"><a href="{% url 'product_list' %}" class="btn-lg btn btn-uppercase btn-primary shop-now-button">همین حالا خرید کنید</a></div>
                 </div>
-                {% endfor %}
               </div>
             </div>
           </div>
         </div>
         {% endif %}
 
-        <!-- ==============================================
-             FEATURED PRODUCTS
-             ============================================== -->
-        {% if featured_products %}
-        <section class="section new-arriavls m-t-40">
-          <h3 class="section-title">محصولات ویژه</h3>
-          <div class="owl-carousel home-owl-carousel custom-carousel owl-theme outer-top-xs">
-            {% for product in featured_products %}
-            <div class="item item-carousel">
-              <div class="products">
-                <div class="product">
-                  <div class="product-image">
-                    <div class="image">
+        <!-- ============================================== NEW PRODUCTS ============================================== -->
+        <div id="product-tabs-slider" class="scroll-tabs outer-top-vs">
+          <div class="more-info-tab clearfix">
+            <h3 class="new-product-title pull-left">{{ site_sections.new_products_title.title|default:'محصولات جدید' }}</h3>
+            <ul class="nav nav-tabs nav-tab-line pull-right" id="new-products-1">
+              <li class="active"><a data-transition-type="backSlide" href="#all" data-toggle="tab">همه</a></li>
+              {% for category in all_categories %}
+              {% if not category.parent and forloop.counter <= 3 %}
+              <li><a data-transition-type="backSlide" href="#cat-{{ category.slug }}" data-toggle="tab">{{ category.name }}</a></li>
+              {% endif %}
+              {% endfor %}
+            </ul>
+          </div>
+          <div class="tab-content outer-top-xs">
+            <div class="tab-pane in active" id="all">
+              <div class="product-slider">
+                <div class="owl-carousel home-owl-carousel custom-carousel owl-theme">
+                  {% if new_products %}
+                  {% for product in new_products %}
+                  <div class="item item-carousel"><div class="products"><div class="product">
+                    <div class="product-image"><div class="image">
                       <a href="{{ product.get_absolute_url }}">
                         <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
-                        {% if product.image_hover %}
-                        <img src="{{ product.image_hover.url }}" alt="" class="hover-image" loading="lazy">
-                        {% endif %}
+                        {% if product.image_hover %}<img src="{{ product.image_hover.url }}" alt="{{ product.name }}" class="hover-image" loading="lazy">{% endif %}
                       </a>
                     </div>
                     {% if product.discount_price %}<div class="tag sale"><span>فروش</span></div>{% endif %}
                     {% if product.is_hot_deal %}<div class="tag hot"><span>داغ</span></div>{% endif %}
-                  </div>
-                  <div class="product-info text-left">
-                    <h3 class="name"><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h3>
-                    <div class="rating rateit-small"></div>
-                    <div class="product-price">
-                      {% if product.discount_price %}
-                        <span class="price">{{ product.discount_price }} ریال</span>
-                        <span class="price-before-discount">{{ product.price }} ریال</span>
-                      {% else %}
-                        <span class="price">{{ product.price }} ریال</span>
-                      {% endif %}
+                    {% if not product.discount_price and not product.is_hot_deal %}<div class="tag new"><span>جدید</span></div>{% endif %}
                     </div>
-                  </div>
-                  <div class="cart clearfix animate-effect">
-                    <div class="action">
-                      <ul class="list-unstyled">
-                        <li class="add-cart-button btn-group">
-                          <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary icon" data-toggle="tooltip" title="افزودن به سبد خرید">
-                            <i class="fa fa-shopping-cart"></i>
-                          </a>
-                          <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary cart-btn">به سبد خرید اضافه کنید</a>
-                        </li>
-                        <li class="lnk wishlist">
-                          <a class="add-to-cart" href="{% url 'add_to_wishlist' product.id %}" data-toggle="tooltip" title="لیست علاقه مندیها">
-                            <i class="icon fa fa-heart"></i>
-                          </a>
-                        </li>
-                        <li class="lnk">
-                          <a class="add-to-cart" href="{% url 'add_to_compare' product.id %}" data-toggle="tooltip" title="مقایسه کنید">
-                            <i class="fa fa-signal"></i>
-                          </a>
-                        </li>
-                      </ul>
+                    <div class="product-info text-left">
+                      <h3 class="name"><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h3>
+                      <div class="rating rateit-small"></div>
+                      <div class="product-price"><span class="price">{{ product.final_price|floatformat:0 }} ریال</span>{% if product.discount_price %}<span class="price-before-discount">{{ product.price|floatformat:0 }} ریال</span>{% endif %}</div>
                     </div>
-                  </div>
+                    <div class="cart clearfix animate-effect"><div class="action"><ul class="list-unstyled">
+                      <li class="add-cart-button btn-group">
+                        <form method="post" action="{% url 'add_to_cart' product.id %}" style="display:inline-block;">
+                          {% csrf_token %}<input type="hidden" name="quantity" value="1">
+                          <button type="submit" class="btn btn-primary icon" title="افزودن به سبد خرید"><i class="fa fa-shopping-cart"></i></button>
+                          <button type="submit" class="btn btn-primary cart-btn">به سبد خرید اضافه کنید</button>
+                        </form>
+                      </li>
+                      <li class="lnk wishlist"><a href="{% url 'add_to_wishlist' product.id %}" title="لیست علاقه مندیها"><i class="icon fa fa-heart"></i></a></li>
+                      <li class="lnk"><a href="{% url 'add_to_compare' product.id %}" title="مقایسه کنید"><i class="fa fa-signal"></i></a></li>
+                    </ul></div></div>
+                  </div></div></div>
+                  {% endfor %}
+                  {% else %}
+                  {% for i in "123456" %}
+                  <div class="item item-carousel"><div class="products"><div class="product">
+                    <div class="product-image"><div class="image"><a href="{% url 'product_list' %}"><img src="{% static 'images/products/p' %}{{ forloop.counter }}.jpg" alt="" loading="lazy"><img src="{% static 'images/products/p' %}{{ forloop.counter }}_hover.jpg" alt="" class="hover-image" loading="lazy"></a></div>{% if forloop.first %}<div class="tag new"><span>جدید</span></div>{% elif forloop.counter == 3 or forloop.counter == 5 %}<div class="tag sale"><span>فروش</span></div>{% elif forloop.counter == 6 %}<div class="tag hot"><span>داغ</span></div>{% endif %}</div>
+                    <div class="product-info text-left"><h3 class="name"><a href="{% url 'product_list' %}">چاپ گلدار دکمه دار</a></h3><div class="rating rateit-small"></div><div class="product-price"><span class="price">450.99 ریال</span><span class="price-before-discount">800 ریال</span></div></div>
+                    <div class="cart clearfix animate-effect"><div class="action"><ul class="list-unstyled"><li class="add-cart-button btn-group"><button data-toggle="tooltip" class="btn btn-primary icon" type="button" title="اضافه کردن سبد خرید"><i class="fa fa-shopping-cart"></i></button><button class="btn btn-primary cart-btn" type="button">به سبد خرید اضافه کنید</button></li><li class="lnk wishlist"><a data-toggle="tooltip" class="add-to-cart" href="{% url 'product_list' %}" title="لیست علاقه مندیها"><i class="icon fa fa-heart"></i></a></li><li class="lnk"><a data-toggle="tooltip" class="add-to-cart" href="{% url 'product_list' %}" title="مقایسه کنید"><i class="fa fa-signal"></i></a></li></ul></div></div>
+                  </div></div></div>
+                  {% endfor %}
+                  {% endif %}
                 </div>
               </div>
             </div>
+            {% for category in all_categories %}
+            {% if not category.parent and forloop.counter <= 3 %}
+            <div class="tab-pane" id="cat-{{ category.slug }}">
+              <div class="product-slider">
+                <div class="owl-carousel home-owl-carousel custom-carousel owl-theme">
+                  {% with cat_products=category.products.all|slice:":6" %}
+                  {% if cat_products %}
+                  {% for product in cat_products %}
+                  <div class="item item-carousel"><div class="products"><div class="product">
+                    <div class="product-image"><div class="image"><a href="{{ product.get_absolute_url }}"><img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">{% if product.image_hover %}<img src="{{ product.image_hover.url }}" alt="" class="hover-image" loading="lazy">{% endif %}</a></div>{% if product.discount_price %}<div class="tag sale"><span>فروش</span></div>{% endif %}{% if product.is_hot_deal %}<div class="tag hot"><span>داغ</span></div>{% endif %}</div>
+                    <div class="product-info text-left"><h3 class="name"><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h3><div class="rating rateit-small"></div><div class="product-price"><span class="price">{{ product.final_price|floatformat:0 }} ریال</span>{% if product.discount_price %}<span class="price-before-discount">{{ product.price|floatformat:0 }} ریال</span>{% endif %}</div></div>
+                    <div class="cart clearfix animate-effect"><div class="action"><ul class="list-unstyled"><li class="add-cart-button btn-group"><form method="post" action="{% url 'add_to_cart' product.id %}" style="display:contents;">{% csrf_token %}<input type="hidden" name="quantity" value="1"><button type="submit" class="btn btn-primary icon" title="افزودن به سبد خرید"><i class="fa fa-shopping-cart"></i></button><button type="submit" class="btn btn-primary cart-btn">به سبد خرید اضافه کنید</button></form></li><li class="lnk wishlist"><a href="{% url 'add_to_wishlist' product.id %}" title="لیست علاقه مندیها"><i class="icon fa fa-heart"></i></a></li><li class="lnk"><a href="{% url 'add_to_compare' product.id %}" title="مقایسه کنید"><i class="fa fa-signal"></i></a></li></ul></div></div>
+                  </div></div></div>
+                  {% endfor %}
+                  {% else %}
+                  {% for i in "123456" %}
+                  <div class="item item-carousel"><div class="products"><div class="product"><div class="product-image"><div class="image"><a href="#"><img src="{% static 'images/products/p' %}{{ forloop.counter }}.jpg" alt="" loading="lazy"><img src="{% static 'images/products/p' %}{{ forloop.counter }}_hover.jpg" alt="" class="hover-image" loading="lazy"></a></div></div><div class="product-info text-left"><h3 class="name"><a href="#">{{ category.name }} - محصول {{ forloop.counter }}</a></h3><div class="rating rateit-small"></div><div class="product-price"><span class="price">450.99 ریال</span><span class="price-before-discount">800 ریال</span></div></div><div class="cart clearfix animate-effect"><div class="action"><ul class="list-unstyled"><li class="add-cart-button btn-group"><button class="btn btn-primary icon" type="button"><i class="fa fa-shopping-cart"></i></button><button class="btn btn-primary cart-btn" type="button">به سبد خرید اضافه کنید</button></li><li class="lnk wishlist"><a href="#" title="لیست علاقه مندیها"><i class="icon fa fa-heart"></i></a></li><li class="lnk"><a href="#" title="مقایسه کنید"><i class="fa fa-signal"></i></a></li></ul></div></div></div></div></div>
+                  {% endfor %}
+                  {% endif %}
+                  {% endwith %}
+                </div>
+              </div>
+            </div>
+            {% endif %}
             {% endfor %}
           </div>
+        </div>
+
+        <!-- ============================================== WIDE BANNERS ============================================== -->
+        <div class="wide-banners outer-bottom-xs">
+          <div class="row">
+            {% with banner1=site_banners.home_wide_1 banner2=site_banners.home_wide_2 banner3=site_banners.home_wide_3 %}
+            <div class="col-md-4 col-sm-4"><div class="wide-banner cnt-strip"><div class="image">
+              {% if banner1 %}<a href="{{ banner1.link|default:'#' }}"><img class="img-responsive" src="{{ banner1.image.url }}" alt="{{ banner1.title }}" loading="lazy"></a>
+              {% else %}<img class="img-responsive" src="{% static 'images/banners/home-banner1.jpg' %}" alt="" loading="lazy">{% endif %}
+            </div></div></div>
+            <div class="col-md-4 col-sm-4"><div class="wide-banner cnt-strip"><div class="image">
+              {% if banner2 %}<a href="{{ banner2.link|default:'#' }}"><img class="img-responsive" src="{{ banner2.image.url }}" alt="{{ banner2.title }}" loading="lazy"></a>
+              {% else %}<img class="img-responsive" src="{% static 'images/banners/home-banner3.jpg' %}" alt="" loading="lazy">{% endif %}
+            </div></div></div>
+            <div class="col-md-4 col-sm-4"><div class="wide-banner cnt-strip"><div class="image">
+              {% if banner3 %}<a href="{{ banner3.link|default:'#' }}"><img class="img-responsive" src="{{ banner3.image.url }}" alt="{{ banner3.title }}" loading="lazy"></a>
+              {% else %}<img class="img-responsive" src="{% static 'images/banners/home-banner2.jpg' %}" alt="" loading="lazy">{% endif %}
+            </div></div></div>
+            {% endwith %}
+          </div>
+        </div>
+
+        <!-- ============================================== FEATURED PRODUCTS ============================================== -->
+        <section class="section featured-product">
+          <div class="row">
+            <div class="col-lg-3">
+              <h3 class="section-title">{{ site_sections.featured_category_title.title|default:'لوازم برقی و الکترونیک' }}</h3>
+              <ul class="sub-cat">
+                {% for category in all_categories %}
+                {% if not category.parent %}<li><a href="{{ category.get_absolute_url }}">{{ category.name }}</a></li>{% endif %}
+                {% empty %}
+                <li><a href="#">تلویزیون</a></li><li><a href="#">یخچال و فریزر</a></li><li><a href="#">ماشین لباسشویی</a></li><li><a href="#">جاروبرقی</a></li><li><a href="#">اتو و بخارشوی</a></li><li><a href="#">ماکروویو</a></li><li><a href="#">پنکه و کولر</a></li><li><a href="#">صوتی و تصویری</a></li>
+                {% endfor %}
+              </ul>
+            </div>
+            <div class="col-lg-9">
+              <div class="owl-carousel homepage-owl-carousel custom-carousel owl-theme outer-top-xs">
+                {% if featured_products %}
+                {% for product in featured_products %}
+                <div class="item item-carousel"><div class="products"><div class="product">
+                  <div class="product-image"><div class="image"><a href="{{ product.get_absolute_url }}"><img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">{% if product.image_hover %}<img src="{{ product.image_hover.url }}" alt="" class="hover-image" loading="lazy">{% endif %}</a></div>{% if product.discount_price %}<div class="tag sale"><span>فروش</span></div>{% endif %}{% if product.is_hot_deal %}<div class="tag hot"><span>داغ</span></div>{% endif %}{% if not product.discount_price and not product.is_hot_deal %}<div class="tag new"><span>جدید</span></div>{% endif %}</div>
+                  <div class="product-info text-left"><h3 class="name"><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h3><div class="rating rateit-small"></div><div class="product-price"><span class="price">{{ product.final_price|floatformat:0 }} ریال</span>{% if product.discount_price %}<span class="price-before-discount">{{ product.price|floatformat:0 }} ریال</span>{% endif %}</div></div>
+                  <div class="cart clearfix animate-effect"><div class="action"><ul class="list-unstyled"><li class="add-cart-button btn-group"><form method="post" action="{% url 'add_to_cart' product.id %}" style="display:contents;">{% csrf_token %}<input type="hidden" name="quantity" value="1"><button type="submit" class="btn btn-primary icon" title="افزودن به سبد خرید"><i class="fa fa-shopping-cart"></i></button><button type="submit" class="btn btn-primary cart-btn">به سبد خرید اضافه کنید</button></form></li><li class="lnk wishlist"><a href="{% url 'add_to_wishlist' product.id %}" title="لیست علاقه مندیها"><i class="icon fa fa-heart"></i></a></li><li class="lnk"><a href="{% url 'add_to_compare' product.id %}" title="مقایسه کنید"><i class="fa fa-signal"></i></a></li></ul></div></div>
+                </div></div></div>
+                {% endfor %}
+                {% else %}
+                {% for i in "123456" %}
+                <div class="item item-carousel"><div class="products"><div class="product"><div class="product-image"><div class="image"><a href="#"><img src="{% static 'images/products/p' %}{{ forloop.counter }}.jpg" alt="" loading="lazy"><img src="{% static 'images/products/p' %}{{ forloop.counter }}_hover.jpg" alt="" class="hover-image" loading="lazy"></a></div>{% if forloop.first %}<div class="tag hot"><span>داغ</span></div>{% elif forloop.counter == 2 %}<div class="tag new"><span>جدید</span></div>{% elif forloop.counter == 3 %}<div class="tag sale"><span>فروش</span></div>{% elif forloop.counter == 4 %}<div class="tag hot"><span>داغ</span></div>{% elif forloop.counter == 5 %}<div class="tag new"><span>جدید</span></div>{% elif forloop.counter == 6 %}<div class="tag sale"><span>فروش</span></div>{% endif %}</div><div class="product-info text-left"><h3 class="name"><a href="#">چاپ گلدار دکمه دار</a></h3><div class="rating rateit-small"></div><div class="product-price"><span class="price">450.99 ریال</span><span class="price-before-discount">800 ریال</span></div></div><div class="cart clearfix animate-effect"><div class="action"><ul class="list-unstyled"><li class="add-cart-button btn-group"><button class="btn btn-primary icon" type="button"><i class="fa fa-shopping-cart"></i></button><button class="btn btn-primary cart-btn" type="button">به سبد خرید اضافه کنید</button></li><li class="lnk wishlist"><a href="#" title="لیست علاقه مندیها"><i class="icon fa fa-heart"></i></a></li><li class="lnk"><a href="#" title="مقایسه کنید"><i class="fa fa-signal"></i></a></li></ul></div></div></div></div></div>
+                {% endfor %}
+                {% endif %}
+              </div>
+            </div>
+          </div>
         </section>
-        {% endif %}
-        
+
+        <!-- ============================================== WIDE BANNERS 2 ============================================== -->
+        <div class="wide-banners outer-bottom-xs">
+          <div class="row">
+            {% with banner_big=site_banners.home_wide_big banner4=site_banners.home_wide_4 %}
+            <div class="col-md-8"><div class="wide-banner1 cnt-strip"><div class="image">
+              {% if banner_big %}<a href="{{ banner_big.link|default:'#' }}"><img class="img-responsive" src="{{ banner_big.image.url }}" alt="{{ banner_big.title }}" loading="lazy"></a>
+              {% else %}<img class="img-responsive" src="{% static 'images/banners/home-banner.jpg' %}" alt="" loading="lazy">{% endif %}
+            </div><div class="strip strip-text"><div class="strip-inner"><h2 class="text-right">{{ banner_big.description|default:'تخفیفات ویژه لوازم برقی'|safe }}<br><span class="shopping-needs">40% تخفیف برای اجناس انتخاب شده دریافت کنید</span></h2></div></div><div class="new-label"><div class="text">جدید</div></div></div></div>
+            <div class="col-md-4"><div class="wide-banner cnt-strip"><div class="image">
+              {% if banner4 %}<a href="{{ banner4.link|default:'#' }}"><img class="img-responsive" src="{{ banner4.image.url }}" alt="{{ banner4.title }}" loading="lazy"></a>
+              {% else %}<img class="img-responsive" src="{% static 'images/banners/home-banner4.jpg' %}" alt="" loading="lazy">{% endif %}
+            </div></div></div>
+            {% endwith %}
+          </div>
+        </div>
+
+        <!-- ============================================== BLOG SLIDER ============================================== -->
+        <section class="section latest-blog outer-bottom-vs">
+          <h3 class="section-title">{{ site_sections.latest_blog_title.title|default:'آخرین مقالات' }}</h3>
+          <div class="blog-slider-container outer-top-xs">
+            <div class="owl-carousel blog-slider custom-carousel">
+              {% if latest_posts %}
+              {% for post in latest_posts %}
+              <div class="item"><div class="blog-post">
+                <div class="blog-post-image"><div class="image"><a href="{% url 'blog_detail' post.slug %}">{% if post.image %}<img src="{{ post.image.url }}" alt="{{ post.title }}" loading="lazy">{% else %}<img src="{% static 'images/blog-post/blog_big_0' %}{{ forloop.counter }}.jpg" alt="{{ post.title }}" loading="lazy">{% endif %}</a></div></div>
+                <div class="blog-post-info text-left"><h3 class="name"><a href="{% url 'blog_detail' post.slug %}">{{ post.title }}</a></h3><span class="info">توسط {{ post.author.get_full_name|default:post.author.username }} | {{ post.published_at|date:"Y/m/d" }}</span><p class="text">{{ post.summary|truncatewords:15 }}</p></div>
+              </div></div>
+              {% endfor %}
+              {% else %}
+              <div class="item"><div class="blog-post"><div class="blog-post-image"><div class="image"><a href="{% url 'blog' %}"><img src="{% static 'images/blog-post/blog_big_01.jpg' %}" alt="" loading="lazy"></a></div></div><div class="blog-post-info text-left"><h3 class="name"><a href="{% url 'blog' %}">فروش ویژه برای همه مشتریان عزیز</a></h3><span class="info">توسط Voltom | 21 مارس 2025</span><p class="text">جدیدترین تخفیف‌های لوازم برقی را از دست ندهید</p></div></div></div>
+              <div class="item"><div class="blog-post"><div class="blog-post-image"><div class="image"><a href="{% url 'blog' %}"><img src="{% static 'images/blog-post/blog_big_02.jpg' %}" alt="" loading="lazy"></a></div></div><div class="blog-post-info text-left"><h3 class="name"><a href="{% url 'blog' %}">راهنمای خرید تلویزیون</a></h3><span class="info">توسط Voltom | 21 مارس 2025</span><p class="text">هر آنچه باید قبل از خرید تلویزیون بدانید</p></div></div></div>
+              <div class="item"><div class="blog-post"><div class="blog-post-image"><div class="image"><a href="{% url 'blog' %}"><img src="{% static 'images/blog-post/blog_big_03.jpg' %}" alt="" loading="lazy"></a></div></div><div class="blog-post-info text-left"><h3 class="name"><a href="{% url 'blog' %}">۵ اشتباه رایج در خرید لوازم خانگی</a></h3><span class="info">توسط Voltom | 21 مارس 2025</span><p class="text">با این اشتباهات رایج آشنا شوید</p></div></div></div>
+              <div class="item"><div class="blog-post"><div class="blog-post-image"><div class="image"><a href="{% url 'blog' %}"><img src="{% static 'images/blog-post/blog_big_01.jpg' %}" alt="" loading="lazy"></a></div></div><div class="blog-post-info text-left"><h3 class="name"><a href="{% url 'blog' %}">بررسی تخصصی یخچال فریزر الجی</a></h3><span class="info">توسط Voltom | 21 مارس 2025</span><p class="text">بررسی کامل یخچال فریزر الجی ۳۲ فوت</p></div></div></div>
+              <div class="item"><div class="blog-post"><div class="blog-post-image"><div class="image"><a href="{% url 'blog' %}"><img src="{% static 'images/blog-post/blog_big_02.jpg' %}" alt="" loading="lazy"></a></div></div><div class="blog-post-info text-left"><h3 class="name"><a href="{% url 'blog' %}">آموزش نگهداری از لوازم برقی</a></h3><span class="info">توسط Voltom | 21 مارس 2025</span><p class="text">نکات طلایی برای افزایش عمر لوازم برقی</p></div></div></div>
+              {% endif %}
+            </div>
+          </div>
+        </section>
+
       </div>
-      <!-- /.homebanner-holder -->
+      <!-- /.homebanner-holder --> 
     </div>
-    <!-- /.row -->
+    <!-- /.row --> 
+    
+    <!-- ============================================== BRANDS CAROUSEL ============================================== -->
+    <div id="brands-carousel" class="logo-slider outer-top-vs">
+      <div class="logo-slider-inner">
+        <div id="brand-slider" class="owl-carousel brand-slider custom-carousel owl-theme">
+          {% if all_brands %}
+            {% for brand in all_brands %}
+            <div class="item m-t-15"><a href="{{ brand.get_absolute_url }}" class="image"><span style="display:block;text-align:center;font-weight:bold;color:#666;padding:10px;">{{ brand.name }}</span></a></div>
+            {% endfor %}
+          {% else %}
+            {% for category in all_categories %}
+            {% if not category.parent %}
+            <div class="item m-t-15"><a href="{{ category.get_absolute_url }}" class="image"><span style="display:block;text-align:center;font-weight:bold;color:#666;padding:10px;">{{ category.name }}</span></a></div>
+            {% endif %}
+            {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <!-- ============================================== BRANDS CAROUSEL : END ============================================== --> 
   </div>
-  <!-- /.container -->
+  <!-- /.container --> 
 </div>
-<!-- /.body-content -->
+<!-- /#top-banner-and-menu --> 
 
 {% block extra_js %}
 <script>
@@ -384,22 +524,11 @@ document.querySelectorAll('.timing-wrapper').forEach(function(timer) {
     if (!endStr) return;
     var end = new Date(endStr).getTime();
     if (isNaN(end)) return;
-    
-    var daysEl = timer.querySelector('.days');
-    var hoursEl = timer.querySelector('.hours');
-    var minsEl = timer.querySelector('.mins');
-    var secsEl = timer.querySelector('.secs');
-    
+    var daysEl = timer.querySelector('.days'), hoursEl = timer.querySelector('.hours'),
+        minsEl = timer.querySelector('.mins'), secsEl = timer.querySelector('.secs');
     setInterval(function() {
-        var now = new Date().getTime();
-        var diff = end - now;
-        if (diff <= 0) {
-            daysEl.textContent = '0';
-            hoursEl.textContent = '0';
-            minsEl.textContent = '0';
-            secsEl.textContent = '0';
-            return;
-        }
+        var now = new Date().getTime(), diff = end - now;
+        if (diff <= 0) { daysEl.textContent = '0'; hoursEl.textContent = '0'; minsEl.textContent = '0'; secsEl.textContent = '0'; return; }
         daysEl.textContent = Math.floor(diff / 86400000);
         hoursEl.textContent = Math.floor((diff % 86400000) / 3600000);
         minsEl.textContent = Math.floor((diff % 3600000) / 60000);

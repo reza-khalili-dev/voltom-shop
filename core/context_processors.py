@@ -1,5 +1,5 @@
-from core.models import SiteSettings, Slider, SidebarBanner, SidebarWidget, StaticPage, ContactInfo
-from products.models import Category, Tag
+from core.models import SiteSettings, Slider, SidebarBanner, SidebarWidget, StaticPage, ContactInfo, NavigationMenu, SiteBanner, SiteSection
+from products.models import Category, Tag, Brand
 from cart.models import Cart
 
 
@@ -28,9 +28,37 @@ def all_tags(request):
     return {'all_tags': Tag.objects.all()}
 
 
+def navigation_menu(request):
+    menu_items = NavigationMenu.objects.filter(is_active=True, parent=None).select_related('category')
+    return {'navigation_menu': menu_items}
+
+
+def site_banners(request):
+    """بنرهای سایت - به صورت لیست برای استفاده ساده در template"""
+    banners = SiteBanner.objects.filter(is_active=True)
+    # هر بنر با اسم position در دسترسه
+    result = {}
+    for banner in banners:
+        result[banner.position] = banner
+    return {'site_banners': result}
+
+
+def site_sections(request):
+    """عناوین بخش‌ها - به صورت لیست برای استفاده ساده در template"""
+    sections = SiteSection.objects.filter(is_active=True)
+    result = {}
+    for section in sections:
+        result[section.section_key] = section
+    return {'site_sections': result}
+
+
+def all_brands(request):
+    brands = Brand.objects.filter(is_active=True)
+    return {'all_brands': brands}
+
+
 def sidebar_context(request):
     from core.models import SidebarBanner, SidebarWidget
-    from products.models import Tag
     from blog.models import BlogCategory
     return {
         'sidebar_banners': SidebarBanner.objects.filter(is_active=True),
@@ -50,7 +78,6 @@ def static_pages(request):
 
 
 def contact_info(request):
-    from core.models import ContactInfo
     contact = ContactInfo.objects.first()
     return {'contact_info': contact}
 

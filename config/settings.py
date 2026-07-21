@@ -96,6 +96,11 @@ TEMPLATES = [
                 'core.context_processors.static_pages',
                 'core.context_processors.contact_info',
                 'core.context_processors.footer_columns',
+                'core.context_processors.navigation_menu',
+                'core.context_processors.site_banners',
+                'core.context_processors.site_sections',
+                'core.context_processors.all_brands',
+
             ],
         },
     },
