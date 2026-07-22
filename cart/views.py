@@ -11,25 +11,28 @@ class CartDetailView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        cart, created = Cart.objects.get_or_create(user=self.request.user)
+        cart, _ = Cart.objects.get_or_create(user=self.request.user)
         context['cart'] = cart
         return context
 
 
 class AddToCartView(LoginRequiredMixin, View):
     def post(self, request, product_id):
+        return self._add_to_cart(request, product_id)
+
+    def get(self, request, product_id):
+        return self._add_to_cart(request, product_id)
+
+    def _add_to_cart(self, request, product_id):
         product = get_object_or_404(Product, id=product_id, is_active=True)
         cart, created = Cart.objects.get_or_create(user=request.user)
-        quantity = int(request.POST.get('quantity', 1))
+        quantity = int(request.POST.get('quantity', request.GET.get('quantity', 1)))
 
         # Check inventory
-        if hasattr(product, 'inventory'):
-            if product.inventory.stock <= 0:
-                messages.error(request, 'موجودی این محصول به پایان رسیده است.')
-                return redirect('product_detail', slug=product.slug)
-            max_stock = product.inventory.stock
-        else:
-            max_stock = 999
+        max_stock = product.stock
+        if max_stock <= 0:
+            messages.error(request, 'موجودی این محصول به پایان رسیده است.')
+            return redirect('product_detail', slug=product.slug)
 
         # Find existing cart item
         cart_item = CartItem.objects.filter(cart=cart, product=product).first()

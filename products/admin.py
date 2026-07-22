@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Brand, Category, Tag, Product, ProductImage, Specification, ProductInventory, Wishlist
+from .models import Brand, Category, Tag, Product, ProductImage, Specification, Wishlist
 
 
 class ProductImageInline(admin.TabularInline):
@@ -39,7 +39,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['name', 'brand', 'category', 'price', 'discount_price', 'total_stock', 'is_active', 'is_featured', 'is_hot_deal']
+    list_display = ['name', 'brand', 'category', 'price', 'discount_price', 'stock', 'is_active', 'is_featured', 'is_hot_deal']
     prepopulated_fields = {'slug': ('name',)}
     list_filter = ['is_active', 'is_featured', 'is_hot_deal', 'category', 'brand', 'tags']
     search_fields = ['name', 'description']
@@ -64,18 +64,15 @@ class ProductAdmin(admin.ModelAdmin):
         ('سئو', {
             'fields': ('meta_title', 'meta_description'),
         }),
+        ('موجودی', {
+            'fields': ('stock', 'sku')
+        }),
     )
 
 
 @admin.register(ProductImage)
 class ProductImageAdmin(admin.ModelAdmin):
     list_display = ['product', 'order', 'image']
-
-
-@admin.register(ProductInventory)
-class ProductInventoryAdmin(admin.ModelAdmin):
-    list_display = ['product', 'stock', 'sku', 'warehouse_location']
-    search_fields = ['product__name', 'sku']
 
 
 @admin.register(Wishlist)

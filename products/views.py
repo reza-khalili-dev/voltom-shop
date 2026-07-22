@@ -67,7 +67,8 @@ class ProductDetailView(DetailView):
     context_object_name = 'product'
 
     def get_queryset(self):
-        return Product.objects.filter(is_active=True).select_related('category', 'brand', 'inventory').prefetch_related('specifications', 'gallery', 'tags')
+        return Product.objects.filter(is_active=True).select_related('category', 'brand').prefetch_related('specifications', 'gallery', 'tags')
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

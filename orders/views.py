@@ -144,9 +144,8 @@ class VerifyPaymentView(LoginRequiredMixin, View):
                     # Reduce stock after successful payment
                     for item in order.items.all():
                         product = item.product
-                        if hasattr(product, 'inventory'):
-                            product.inventory.stock = max(0, product.inventory.stock - item.quantity)
-                            product.inventory.save()
+                        product.stock = max(0, product.stock - item.quantity)
+                        product.save()
 
                     # Clear cart
                     Cart.objects.filter(user=request.user).delete()

@@ -82,6 +82,8 @@ class Product(models.Model):
     technical_description = models.TextField(blank=True, verbose_name='توضیحات فنی')
     price = models.DecimalField(max_digits=12, decimal_places=0, verbose_name='قیمت (ریال)')
     discount_price = models.DecimalField(max_digits=12, decimal_places=0, blank=True, null=True, verbose_name='قیمت با تخفیف (ریال)')
+    stock = models.PositiveIntegerField(default=0, verbose_name='موجودی')
+    sku = models.CharField(max_length=50, blank=True, verbose_name='کد انبار')
     image = models.ImageField(upload_to='products/', verbose_name='تصویر اصلی')
     image_hover = models.ImageField(upload_to='products/', blank=True, null=True, verbose_name='تصویر هاور')
     warranty_period = models.CharField(max_length=100, blank=True, verbose_name='مدت گارانتی')
@@ -118,9 +120,7 @@ class Product(models.Model):
 
     @property
     def total_stock(self):
-        if hasattr(self, 'inventory'):
-            return self.inventory.stock
-        return 0
+        return self.stock
 
     def get_absolute_url(self):
         return reverse('product_detail', args=[self.slug])
@@ -156,19 +156,6 @@ class ProductImage(models.Model):
         return f'تصویر {self.order} - {self.product.name}'
 
 
-class ProductInventory(models.Model):
-    """موجودی محصولات الکترونیکی"""
-    product = models.OneToOneField(Product, on_delete=models.CASCADE, related_name='inventory', verbose_name='محصول')
-    stock = models.PositiveIntegerField(default=0, verbose_name='موجودی')
-    sku = models.CharField(max_length=50, unique=True, blank=True, verbose_name='کد انبار')
-    warehouse_location = models.CharField(max_length=100, blank=True, verbose_name='محل نگهداری در انبار')
-
-    class Meta:
-        verbose_name = 'موجودی'
-        verbose_name_plural = 'موجودی‌ها'
-
-    def __str__(self):
-        return f'{self.product.name} - موجودی: {self.stock}'
 
 
 class Wishlist(models.Model):
