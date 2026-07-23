@@ -158,6 +158,7 @@ class SiteSection(models.Model):
         ('featured_category_title', 'عنوان بخش لوازم برقی و الکترونیک'),
         ('latest_blog_title', 'عنوان بخش آخرین مقالات'),
         ('brands_title', 'عنوان بخش برندها'),
+        ('promo_text', 'متن تخفیف نوار منو'),
     ]
 
     section_key = models.CharField(max_length=50, choices=SECTION_KEYS, unique=True, verbose_name='کلید بخش')

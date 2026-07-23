@@ -250,8 +250,7 @@
                   <li class="dropdown"><a href="{% url 'about_us' %}">درباره ما</a></li>
                   <li class="dropdown"><a href="{% url 'contact_us' %}">تماس با ما</a></li>
                 {% endif %}
-                <li class="dropdown navbar-right special-menu"><a href="{% url 'product_list' %}?tag=sale">30% تخفیف روی اجناس انتخابی دریافت کنید</a></li>
-              </ul>
+                <li class="dropdown navbar-right special-menu"><a href="{% url 'product_list' %}?tag=sale">{{ site_sections.promo_text.title|default:'30% تخفیف روی اجناس انتخابی دریافت کنید' }}</a></li>              </ul>
               <div class="clearfix"></div>
             </div>
           </div>
